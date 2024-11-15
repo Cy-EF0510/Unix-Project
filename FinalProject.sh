@@ -135,7 +135,7 @@ User_Management() {
 echo ""
 echo -e "\e[1m\e[34m\e[4mUser Management\e[0m"
 PS3=$'\nEnter an option [1-9]: '
-user_management_menu=("Add a user" "Give root permission to a user" "Delete a user" "Show active users" "Disconnect a use>" "Show the list of all groups that a user is a member of them" "Change the user group" "Main Menu" "Exit Program")
+user_management_menu=("Add a user" "Give root permission to a user" "Delete a user" "Show active users" "Disconnect a user" "Show the list of all groups that a user is a member of them" "Change the user group" "Main Menu" "Exit Program")
 select option in "${user_management_menu[@]}"
 do
         case $option in 
