@@ -1,6 +1,7 @@
 #! /bin/bash
 
 echo "XYX Corp LTD."
+echo ""
 Main_Menu_Function () {
 while true; do 
 echo ""
@@ -56,20 +57,23 @@ select option in "${ssMenu[@]}"
 do
 	case $option in
 		"Memory Status")
-			echo "Memory Status"
-   			break
+			echo "Checking Memory Status"
+			free
 		;;
 		"CPU Temperature")
-			echo "CPU Temperature"
-   			break
+			echo "CPU Temperature (Please note that '86_pkg_temp' is the CPU's temperature)"
+			(paste <(cat /sys/class/thermal/thermal_zone*/type) <(cat /sys/class/thermal/thermal_zone*/temp) | column -s $'\t' -t | sed 's/\(.\)..$/.\1°C/') | grep 'x86_pkg_temp'
 		;;
 		"Active Processes")
 			echo "Active Processes"
-   			break
+			echo "Press "q" to exit"
+			top
 		;;
 		"Stop and Close Process")
-			echo "Stop and Close Process"
-   			break
+			echo "Please enter the process you wish to stop and close: "
+			read process
+			killall $process
+			echo "$process has been terminated"
 		;;
 		"Main Menu")
 			echo "Going Back to Main Menu..."
@@ -98,21 +102,17 @@ select option in "${backupMenu[@]}"
 do
 	case $option in
 		"Make a Backup Schedule")
-			echo "Memo"
+			echo "Please enter a day of the week in which you want to backup a file: "
+			read 
 		;;
 		"Show Last Backup Process")
 			echo "CPU Temperature"
 		;;
 		"Main Menu")
-                        echo "Going Back to Main Menu..."
-                        echo ""
-                        PS3=$'\nEnter your choice [1-7]: '
-                        break
+			echo "Going Back to Main Menu..."
+			echo ""
+			break
 		;;
-  		"Exit Program")
-                        echo "Exiting Program..."
-                        exit 0
-                ;;
 		*)
 			echo "Error: Wrong input"
 		;;
