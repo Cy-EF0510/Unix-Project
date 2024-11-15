@@ -3,65 +3,56 @@
 echo "XYX Corp LTD."
 echo ""
 Main_Menu_Function () {
-echo "M A I N - M E N U"
-PS3="Enter your choice [1-7] "
+while true; do 
+echo ""
+echo -e "\e[1m\e[36m\e[4mM A I N - M E N U\e[0m"
+PS3=$'\nEnter an option [1-7]: ' 
 options=("System Status" "Backup" "Network" "Services" "User Management" "File Management" "Exit")
 select option in "${options[@]}"
 do
 	case $option in 
 		"System Status")
 			System_Status
-			PS3="Enter your choice [1-7] "
-			echo "M A I N - M E N U"
-			echo "1) System Status"
-			echo "2) Backup"
-			echo "3) Network"
-			echo "4) Services"
-			echo "5) User Management"
-			echo "6) File Management"
-			echo "7) Exit"
-
+			break
 		;;
 		"Backup")
 			Backup
-			PS3="Enter your choice [1-7] "
-			echo "M A I N - M E N U"
-			echo "1) System Status"
-			echo "2) Backup"
-			echo "3) Network"
-			echo "4) Services"
-			echo "5) User Management"
-			echo "6) File Management"
-			echo "7) Exit"
-		;;
+			break
+   		;;
 		"Network")
 			Network
+   			break
 		;;
 		"Services")
 			Services
+   			break
 		;;
 		"User Management")
 			User_Management
+   			break
 		;;
 		"File Management")
 			File_Management
+   			break
 		;;
 		"Exit")
-			echo "Exiting..."
-			break
+			echo "Exiting Program..."
+			exit 0
 		;;
 		*)
 			echo "Error: Wrong input"
 		;;
 	esac
+ done
 done
 }
 
 #System Status
 System_Status() {
-echo "S Y S T E M - S T A T U S"
-PS3="Enter an option [1-5] "
-ssMenu=("Memory Status" "CPU Temperature" "Active Processes" "Stop and Close Process" "Main Menu")
+echo ""
+echo -e "\e[1m\e[34m\e[4mSYSTEM - STATUS\e[0m"
+PS3=$'\nEnter an option [1-6]: '
+ssMenu=("Memory Status" "CPU Temperature" "Active Processes" "Stop and Close Process" "Main Menu" "Exit Program")
 select option in "${ssMenu[@]}"
 do
 	case $option in
@@ -83,13 +74,17 @@ do
 			read process
 			killall $process
 			echo "$process has been terminated"
-
 		;;
 		"Main Menu")
 			echo "Going Back to Main Menu..."
-			echo ""
+                        echo ""
+                        PS3=$'\nEnter your choice [1-7]: '
 			break
 		;;
+ 		"Exit Program")
+                        echo "Exiting Program..."
+                        exit 0
+                ;;
 		*)
 			echo "Error: Wrong input"
 		;;
@@ -99,9 +94,10 @@ done
 
 #Backup
 Backup() {
-echo "B A C K U P"
-PS3="Enter an option [1-4] "
-backupMenu=("Make a Backup Schedule" "Show Last Backup Process" "Main Menu")
+echo ""
+echo -e "\e[1m\e[34m\e[4mBACKUP\e[0m"
+PS3=$'\nEnter an option [1-4]: '
+backupMenu=("Make a Backup Schedule" "Show Last Backup Process" "Main Menu" "Exit Program")
 select option in "${backupMenu[@]}"
 do
 	case $option in
@@ -136,7 +132,90 @@ echo "Services"
 
 #User Management
 User_Management() {
-echo "User Management"
+echo ""
+echo -e "\e[1m\e[34m\e[4mUser Management\e[0m"
+PS3=$'\nEnter an option [1-9]: '
+user_management_menu=("Add a user" "Give root permission to a user" "Delete a user" "Show active users" "Disconnect a use>
+select option in "${user_management_menu[@]}"
+do
+        case $option in 
+
+        "Add a user")
+        echo "Please enter the new username: "
+        read new_user
+        if id $new_user &>/dev/null; then
+                echo "The user already exists. "
+                else
+                sudo useradd $new_user
+                sudo passwd $new_user
+                echo "A new user has been added with a password. "
+        fi
+        ;;
+        "Give root permission to a user")
+        echo "Please enter a username: "
+        read new_sudo_user
+        if id $new_sudo_user &>/dev/null; then
+                sudo usermod -aG root $new_sudo_user
+                echo "The user now has root permission. "
+        else
+                echo "The user doesn't exist. "
+        fi
+        ;;
+        "Delete a user")
+                echo "Please enter a username: "
+                read user
+                if id $user &>/dev/null; then
+                    echo "Are you sure you want to delete the user? (Y/N)"
+                    read ans
+                        if [[ $ans == [Yy] ]]; then
+                                sudo userdel -r $user
+                                echo "User succesfully deleted"
+                        elif [[ $ans == [Nn] ]]; then
+                                echo "The user will not be deleted. "
+                        else
+                                echo "invalid input"
+                fi
+                else
+                        echo "User doesn't exist. "
+        fi
+        ;;
+        "Show active users")
+                who
+        ;;
+
+        "Disconnect a user")
+                echo "Please enter the user you want to log out: "
+                read kill_user
+                sudo pkill -KILL -u $kill_user
+        ;;
+        "Show the list of all groups that a user is a member of them")
+                echo "Please enter a username: "
+                read user
+                        if id $user &>/dev/null; then
+                        groups $user
+                        else
+                        echo "The user doesn't exist. "
+                        fi
+        ;;
+        "Change the user group")
+                echo "Not done yet"
+        ;;
+        "Main Menu")
+                echo "Going Back to Main Menu..."
+                echo ""
+                PS3=$'\nEnter your choice [1-7]: '
+                break
+        ;;
+        "Exit Program")
+                echo "Exiting Program..."
+                exit 0
+        ;;
+        *)
+                echo "Invalid option"
+        ;;
+        esac
+done
+
 }
 
 #File Management
