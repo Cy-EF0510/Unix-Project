@@ -90,9 +90,10 @@ done
 
 #Backup
 Backup() {
-echo "B A C K U P"
-PS3="Enter an option [1-4] "
-backupMenu=("Make a Backup Schedule" "Show Last Backup Process" "Main Menu")
+echo ""
+echo -e "\e[1m\e[34m\e[4mBACKUP\e[0m"
+PS3=$'\nEnter an option [1-4]: '
+backupMenu=("Make a Backup Schedule" "Show Last Backup Process" "Main Menu" "Exit Program")
 select option in "${backupMenu[@]}"
 do
 	case $option in
@@ -103,11 +104,15 @@ do
 			echo "CPU Temperature"
 		;;
 		"Main Menu")
-			echo "Going Back to Main Menu..."
-			echo ""
-			break
-			#Error Here if you go to back to main menu and exit it doesnt work
+                        echo "Going Back to Main Menu..."
+                        echo ""
+                        PS3=$'\nEnter your choice [1-7]: '
+                        break
 		;;
+  		"Exit Program")
+                        echo "Exiting Program..."
+                        exit 0
+                ;;
 		*)
 			echo "Error: Wrong input"
 		;;
@@ -127,7 +132,90 @@ echo "Services"
 
 #User Management
 User_Management() {
-echo "User Management"
+echo ""
+echo -e "\e[1m\e[34m\e[4mUser Management\e[0m"
+PS3=$'\nEnter an option [1-9]: '
+user_management_menu=("Add a user" "Give root permission to a user" "Delete a user" "Show active users" "Disconnect a use>
+select option in "${user_management_menu[@]}"
+do
+        case $option in 
+
+        "Add a user")
+        echo "Please enter the new username: "
+        read new_user
+        if id $new_user &>/dev/null; then
+                echo "The user already exists. "
+                else
+                sudo useradd $new_user
+                sudo passwd $new_user
+                echo "A new user has been added with a password. "
+        fi
+        ;;
+        "Give root permission to a user")
+        echo "Please enter a username: "
+        read new_sudo_user
+        if id $new_sudo_user &>/dev/null; then
+                sudo usermod -aG root $new_sudo_user
+                echo "The user now has root permission. "
+        else
+                echo "The user doesn't exist. "
+        fi
+        ;;
+        "Delete a user")
+                echo "Please enter a username: "
+                read user
+                if id $user &>/dev/null; then
+                    echo "Are you sure you want to delete the user? (Y/N)"
+                    read ans
+                        if [[ $ans == [Yy] ]]; then
+                                sudo userdel -r $user
+                                echo "User succesfully deleted"
+                        elif [[ $ans == [Nn] ]]; then
+                                echo "The user will not be deleted. "
+                        else
+                                echo "invalid input"
+                fi
+                else
+                        echo "User doesn't exist. "
+        fi
+        ;;
+        "Show active users")
+                who
+        ;;
+
+        "Disconnect a user")
+                echo "Please enter the user you want to log out: "
+                read kill_user
+                sudo pkill -KILL -u $kill_user
+        ;;
+        "Show the list of all groups that a user is a member of them")
+                echo "Please enter a username: "
+                read user
+                        if id $user &>/dev/null; then
+                        groups $user
+                        else
+                        echo "The user doesn't exist. "
+                        fi
+        ;;
+        "Change the user group")
+                echo "Not done yet"
+        ;;
+        "Main Menu")
+                echo "Going Back to Main Menu..."
+                echo ""
+                PS3=$'\nEnter your choice [1-7]: '
+                break
+        ;;
+        "Exit Program")
+                echo "Exiting Program..."
+                exit 0
+        ;;
+        *)
+                echo "Invalid option"
+        ;;
+        esac
+done
+
 }
 
 #File Management
