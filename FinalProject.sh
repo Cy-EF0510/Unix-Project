@@ -70,8 +70,7 @@ do
 			top
 		;;
 		"Stop and Close Process")
-			echo "Please enter the process you wish to stop and close: "
-			read process
+			read -p "Please enter the process you wish to stop and close: " process
 			killall $process
 			echo "$process has been terminated"
 		;;
@@ -123,16 +122,17 @@ done
 #Network
 Network() {
         echo " "
-        echo "== NETWORK MENU =="
-        echo "1. Show network cards, IP adresses, and default gateways"
-        echo "2. Enable/Disable a network card"
-        echo "3. Set an IP adress on a network card"
-        echo "4. Connect to a nearby wifi network"
-        echo "5. Exit to the main menu"
-        echo " "
+        echo -e "\e[1m\e[34m\e[4mNETWORK\e[0m"
+        echo "1) Show network cards, IP adresses, and default gateways"
+        echo "2) Enable/Disable a network card"
+        echo "3) Set an IP adress on a network card"
+        echo "4) Connect to a nearby wifi network"
+        echo "5) Exit to the main menu"
+	echo "6) Exit the program"
+        echo ""
 
         while true; do
-        read -p "Select an option [1-5]: " option
+        read -p "Enter an option [1-6]: " option
 
         case $option in
                 1)
@@ -175,6 +175,7 @@ Network() {
                 else
                         echo "Error. The network card "$card" does not exist."
                 fi
+		;;
                 4)
                 echo "Here are the available wifi networks: "
                 nmcli dev wifi | awk '{print$2}' | tail -n +2
@@ -189,23 +190,27 @@ Network() {
                 fi
                 ;;
                 5)
-                main menu
+                break
                 ;;
+		6)
+        	echo "Exiting Program..."
+        	exit 0
+        	;;
                 *)
                 echo "Invalid option. Please choose between option 1 to 5."
                 ;;
         esac
 done
 }
-Network
-
 
 #Services
 Services() {
 	echo " "
-        echo "== SERVICES MENU =="
-        echo "1. List current services"
-        echo "2. Start/Stop a service"
+        echo -e "\e[1m\e[34m\e[4mSERVICES\e[0m"
+        echo "1) List current services"
+        echo "2) Start/Stop a service"
+	echo "3) Exit to the main menu"
+	echo "4) Exit the program"
         echo " "
 
         while true; do
@@ -229,13 +234,19 @@ Services() {
                         echo "Wrong input. Please answer with 'start' or 'stop'."
                 fi
                 ;;
+		3) 
+  		break
+    		;;
+		4)
+        	echo "Exiting Program..."
+        	exit 0
+        	;;
                 *)
                 echo "Invalid option. PLease choose between option 1 and 2."
                 ;;
         esac
 done
 }
-Services
 
 #User Management
 User_Management() {
@@ -246,10 +257,8 @@ user_management_menu=("Add a user" "Give root permission to a user" "Delete a us
 select option in "${user_management_menu[@]}"
 do
         case $option in 
-
         "Add a user")
-        echo "Please enter the new username: "
-        read new_user
+        read -p "Please enter the new username: " new_user
         if id $new_user &>/dev/null; then
                 echo "The user already exists. "
                 else
@@ -259,8 +268,7 @@ do
         fi
         ;;
         "Give root permission to a user")
-        echo "Please enter a username: "
-        read new_sudo_user
+        read -p "Please enter a username: " new_sudo_user
         if id $new_sudo_user &>/dev/null; then
                 sudo usermod -aG root $new_sudo_user
                 echo "The user now has root permission. "
@@ -269,60 +277,70 @@ do
         fi
         ;;
         "Delete a user")
-                echo "Please enter a username: "
-                read user
-                if id $user &>/dev/null; then
-                    echo "Are you sure you want to delete the user? (Y/N)"
-                    read ans
-                        if [[ $ans == [Yy] ]]; then
-                                sudo userdel -r $user
-                                echo "User succesfully deleted"
-                        elif [[ $ans == [Nn] ]]; then
-                                echo "The user will not be deleted. "
-                        else
-                                echo "invalid input"
-                fi
+        read -p "Please enter a username: " user
+        if id $user &>/dev/null; then
+            read -p "Are you sure you want to delete the user? (Y/N): " ans
+                if [[ $ans == [Yy] ]]; then
+                        sudo userdel -r $user
+                        echo "User succesfully deleted"
+                elif [[ $ans == [Nn] ]]; then
+                        echo "The user will not be deleted. "
                 else
-                        echo "User doesn't exist. "
+                        echo "invalid input"
+                fi
+        else
+                echo "User doesn't exist. "
         fi
         ;;
         "Show active users")
-                who
+        who
         ;;
-
         "Disconnect a user")
-                echo "Please enter the user you want to log out: "
-                read kill_user
+        read -p "Please enter the user you want to log out: " kill_user
+        if who | grep -w $kill_user &>/dev/null; then
                 sudo pkill -KILL -u $kill_user
+                echo "$kill_user disconnected."
+        else
+                echo "User already disconnected. "
+        fi
         ;;
-        "Show the list of all groups that a user is a member of them")
-                echo "Please enter a username: "
-                read user
-                        if id $user &>/dev/null; then
-                        groups $user
-                        else
-                        echo "The user doesn't exist. "
-                        fi
+        "List of all groups of a user")
+        read -p "Please enter a username: " user
+        if id $user &>/dev/null; then
+                groups $user
+        else
+                echo "The user doesn't exist. "
+        fi
         ;;
         "Change the user group")
-                echo "Not done yet"
+        read -p "Please enter a username: " user
+        if id $user &>/dev/null; then
+                read -p "Please enter the new group: " newGroup
+                if grep -q $newGroup /etc/group &>/dev/null; then
+                        sudo usermod -aG $newGroup $user
+                        echo "$user has been added to the group $newGroup. "
+                else
+                        echo "The group doesn't exist. "
+                fi
+        else
+                echo "The user doesn't exist. "
+        fi
         ;;
         "Main Menu")
-                echo "Going Back to Main Menu..."
-                echo ""
-                PS3=$'\nEnter your choice [1-7]: '
-                break
+        echo ""
+        echo "Going Back to Main Menu..."
+        PS3=$'\nEnter your choice [1-7]: '
+        break
         ;;
         "Exit Program")
-                echo "Exiting Program..."
-                exit 0
+        echo "Exiting Program..."
+        exit 0
         ;;
         *)
-                echo "Invalid option"
+        echo "Invalid option"
         ;;
         esac
 done
-
 }
 
 #File Management
