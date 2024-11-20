@@ -10,26 +10,21 @@ Project Overview
 Project Requirements and Deliverables
 Task Assignment
 
-Cyril Efren Fabro
-
+Cyril Efren Fabro:
 Creation of Main Menu
 Creation of System Status
 Creation of Backup
 Creation of GitHub Repository
-
-Audréane Deschênes
-
+---------------------------------
+Audréane Deschênes:
+Creation of User Management
+Creation of File Management
 Making the program user-friendly
-
-Mohamed Amine Hamidouch
-
-
-
-
-
-
-
-
+---------------------------------
+Mohamed Amine Hamidouch:
+Creation of Network
+Creation of Services
+---------------------------------
 
 
 Project Components and Solutions
