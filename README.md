@@ -26,7 +26,6 @@ Creation of Network
 Creation of Services
 ---------------------------------
 
-
 Project Components and Solutions
 Detailed Section for Each Part
 Main Menu
