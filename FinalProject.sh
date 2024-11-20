@@ -122,13 +122,109 @@ done
 
 #Network
 Network() {
-echo "Network"
+        echo " "
+        echo "== NETWORK MENU =="
+        echo "1. Show network cards, IP adresses, and default gateways"
+        echo "2. Enable/Disable a network card"
+        echo "3. Set an IP adress on a network card"
+        echo "4. Connect to a nearby wifi network"
+        echo "5. Exit to the main menu"
+        echo " "
+
+        while true; do
+        read -p "Select an option [1-5]: " option
+
+        case $option in
+                1)
+                echo -e "Network cards and IP adresses: " 
+                ip -brief address show
+                echo "Default gateways: "
+                ip route | grep default
+                ;;
+                2)
+                echo "Here are the available network cards: "
+                ip -brief address show
+                read -p "Choose a network card: " card
+                read -p "Do you want to enable or disable it? (e/d) " ed
+                if [ "$ed" == "e" ]; then
+                        sudo ip link set "$card" up
+                        echo ""$card" enabled."
+                elif [ "$ed" == "d" ]; then
+                        sudo ip link set "$card" down
+                        echo ""$card" disabled."
+                else
+                        echo "Error: wrong input. Please answer with 'e' or 'd'."
+                fi
+                ;;
+		3)
+                echo "Here are the available network cards: " 
+                ip -brief address show
+                read -p "Select a network card to set the IP adress on: " card
+                read -p "Enter an IP address: " ip
+                sudo ip addr add "$ip" dev "$card"
+                echo "IP address "$ip" has been set on "$card"."
+                ;;
+                4)
+                echo "Here are the available wifi networks: "
+                nmcli dev wifi | awk '{print$2}' | tail -n +2
+                read -p "What wifi do you want to connect to: " wifi
+                read -s -p "Enter the wifi password: " password
+                if [ -n "$password" ]; then
+                        nmcli dev wifi connect "$wifi" password "$password"
+                        echo "Successfully connected to "$wifi"."
+                else 
+                        nmcli dev wifi connect "$wifi"
+                        echo "Successfully connected to "$wifi"."
+                fi
+                ;;
+                5)
+                main menu
+                ;;
+                *)
+                echo "Invalid option. Please choose between option 1 to 5."
+                ;;
+        esac
+done
 }
+Network
+
 
 #Services
 Services() {
-echo "Services"
+	echo " "
+        echo "== SERVICES MENU =="
+        echo "1. List current services"
+        echo "2. Start/Stop a service"
+        echo " "
+
+        while true; do
+        read -p "Select an option [1-2]: " option
+
+        case $option in
+                1)
+                echo "Here is a list of the current services: "
+                systemctl list-units --type service
+                ;;
+                2)
+                read -p "Choose a service: " serv
+                read -p "Do you want to start it or stop it? " action
+                if [ "$action" == "start" ]; then
+                        systemctl start "$serv"
+                        echo "Service "$serv" has been started."
+                elif [ "$action" == "stop" ]; then
+                        systemctl stop "$serv"
+                        echo "Service "$serv" has been stopped."
+                else
+                        echo "Wrong input. Please answer with 'start' or 'stop'."
+                fi
+                ;;
+                *)
+                echo "Invalid option. PLease choose between option 1 and 2."
+                ;;
+        esac
+done
 }
+Services
 
 #User Management
 User_Management() {
