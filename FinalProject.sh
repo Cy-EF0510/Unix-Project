@@ -145,25 +145,36 @@ Network() {
                 echo "Here are the available network cards: "
                 ip -brief address show
                 read -p "Choose a network card: " card
-                read -p "Do you want to enable or disable it? (e/d) " ed
-                if [ "$ed" == "e" ]; then
-                        sudo ip link set "$card" up
-                        echo ""$card" enabled."
-                elif [ "$ed" == "d" ]; then
-                        sudo ip link set "$card" down
-                        echo ""$card" disabled."
+                if ip link show "$card" &>/dev/null; then
+                        read -p "Do you want to enable or disable it?[e/d]: " ed
+                        if [ "$ed" == "e" ]; then
+                                sudo ip link set "$card" up
+                                echo ""$card" enabled."
+                        elif [ "$ed" == "d" ]; then
+                                sudo ip link set "$card" down
+                                echo ""$card" disabled."
+                        else
+                                echo "Error: wrong input. Please answer with 'e' or 'd'."
+                        fi
                 else
-                        echo "Error: wrong input. Please answer with 'e' or 'd'."
+                        echo "Error. The network card "$card" does not exist."
                 fi
                 ;;
 		3)
                 echo "Here are the available network cards: " 
                 ip -brief address show
                 read -p "Select a network card to set the IP adress on: " card
-                read -p "Enter an IP address: " ip
-                sudo ip addr add "$ip" dev "$card"
-                echo "IP address "$ip" has been set on "$card"."
-                ;;
+                if ip link show "$card" &>/dev/null; then
+                        read -p "Enter an IP address: " ip
+                        if ping -c 1 -W 1 "$ip" &>/dev/null; then
+                                sudo ip addr add "$ip" dev "$card"
+                                echo "IP address "$ip" has been set on "$card"."
+                        else
+                                echo "Error. IP adress "$ip" does not exist."
+                        fi
+                else
+                        echo "Error. The network card "$card" does not exist."
+                fi
                 4)
                 echo "Here are the available wifi networks: "
                 nmcli dev wifi | awk '{print$2}' | tail -n +2
