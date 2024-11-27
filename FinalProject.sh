@@ -409,7 +409,7 @@ do
                 echo "$body" | mail -s "$subject" -a "$file" "$email"
                 echo "Email sent successfully to $email with file attachment."
         else
-                echo "The 'mail' command is not installed. Please install it and try again."
+                echo "The 'mail' command is not installed. Please install it by running the command 'sudo apt-get install mailutils' and try again."
         fi
         ;;
         "Main Menu")
