@@ -1,5 +1,15 @@
 #! /bin/bash
 
+#colors
+RED="\033[31m"
+GREEN="\033[32m"
+ORANGE="\033[33m"
+BLUE="\033[34m"
+PINK="\033[35m"
+CYAN="\033[36m"
+WHITE="\033[37m"
+NC="\033[0;39m"
+
 echo "XYX Corp LTD."
 echo ""
 Main_Menu_Function () {
@@ -137,21 +147,25 @@ done
 #Network
 Network() {
         echo " "
-        echo -e "\e[1m\e[34m\e[4mNETWORK\e[0m"
-        echo "1) Show network cards, IP adresses, and default gateways"
-        echo "2) Enable/Disable a network card"
-        echo "3) Set an IP adress on a network card"
-        echo "4) Connect to a nearby wifi network"
-        echo "5) Exit to the main menu"
-	echo "6) Exit the program"
-        echo ""
+        echo -e "${CYAN}========================================================${NC}"
+        echo -e "${ORANGE}                   == NETWORK MENU ==                  ${NC}"
+        echo -e "${CYAN}========================================================${NC}"
+        echo -e "${ORANGE}1. Show network cards, IP adresses, and default gateways${NC}"
+        echo -e "${ORANGE}2. Enable/Disable a network card${NC}"
+        echo -e "${ORANGE}3. Set an IP adress on a network card${NC}"
+        echo -e "${ORANGE}4. Connect to a nearby wifi network${NC}"
+        echo -e "${ORANGE}5. Exit to the main menu${NC}"
+        echo -e "${ORANGE}6. Exit the program${NC}"
+        echo -e "${CYAN}========================================================${NC}"
+        echo " "
 
         while true; do
-        read -p "Enter an option [1-6]: " option
+        echo " "
+        read -p "Select an option from the Network menu [1-5]: " option
 
         case $option in
                 1)
-                echo -e "Network cards and IP adresses: " 
+                echo -e "${RED}Network cards${NC} and IP adresses: " 
                 ip -brief address show
                 echo "Default gateways: "
                 ip route | grep default
@@ -190,7 +204,7 @@ Network() {
                 else
                         echo "Error. The network card "$card" does not exist."
                 fi
-		;;
+                ;;
                 4)
                 echo "Here are the available wifi networks: "
                 nmcli dev wifi | awk '{print$2}' | tail -n +2
@@ -207,25 +221,29 @@ Network() {
                 5)
                 break
                 ;;
-		6)
-        	echo "Exiting Program..."
-        	exit 0
-        	;;
+                6)
+                echo "Exiting the program..."
+                exit 0
+                ;;
                 *)
                 echo "Invalid option. Please choose between option 1 to 5."
                 ;;
         esac
 done
 }
+Network
 
 #Services
 Services() {
-	echo " "
-        echo -e "\e[1m\e[34m\e[4mSERVICES\e[0m"
-        echo "1) List current services"
-        echo "2) Start/Stop a service"
-	echo "3) Exit to the main menu"
-	echo "4) Exit the program"
+        echo " "
+        echo -e "${CYAN}===============================${NC}"
+        echo -e "${GREEN}      == SERVICES MENU ==      ${NC}"
+        echo -e "${CYAN}===============================${NC}"
+        echo -e "${GREEN}1. Look at the current services${NC}"
+        echo -e "${GREEN}2. Start/Stop a service${NC}"
+        echo -e "${GREEN}3. Exit to the main menu${NC}"
+        echo -e "${GREEN}4. Exit the program${NC}"
+        echo -e "${CYAN}===============================${NC}"
         echo " "
 
         while true; do
@@ -249,19 +267,20 @@ Services() {
                         echo "Wrong input. Please answer with 'start' or 'stop'."
                 fi
                 ;;
-		3) 
-  		break
-    		;;
-		4)
-        	echo "Exiting Program..."
-        	exit 0
-        	;;
+                3)
+                break
+                ;;
+                4)
+                echo "Exiting the program..."
+                exit 0
+                ;;
                 *)
                 echo "Invalid option. PLease choose between option 1 and 2."
                 ;;
         esac
 done
 }
+Services
 
 #User Management
 User_Management() {
