@@ -345,7 +345,88 @@ done
 
 #File Management
 File_Management() {
-echo "File Management"
+echo ""
+echo -e "\e[1m\e[34m\e[4mFILE MANAGEMENT\e[0m"
+PS3=$'\nEnter an option [1-6]: '
+file_management_menu=("File in user's home directory" "10 largest files in the user's home directory" "10 oldest files in the user's home directory" "Send a file as an email attachment" "Main Menu" "Exit Program")
+select option in "${file_management_menu[@]}"
+do
+        case $option in
+        "File in user's home directory")
+        read -p "Please enter a username: " user
+        if id $user &>/dev/null; then
+                read -p "Please enter an existing file: " file
+                home_dir=$(eval echo "~$user")
+                file_path="$home_dir/$file"
+                if [ -f "$file_path" ]; then
+                        echo "File found: $file_path"
+                else
+                        echo "The file doesn't exist in the home directory of $user. "
+                fi
+        else
+                echo "The user doesn't exist. "
+        fi
+        ;;
+        "10 largest files in the user's home directory")
+        read -p "Please enter a username: " user
+        if id $user &>/dev/null; then
+                home_dir=$(eval echo "~$user")
+                if [ -d "$home_dir" ]; then
+                echo "10 largest files in $home_dir:"
+                echo ""
+                find "$home_dir" -type f -exec du -h {} + 2>/dev/null | sort -rh | head -n 10
+                else
+                        echo "The home directory for user '$user' does not exist."
+                fi
+        else
+                echo "The user doesn't exist. "
+        fi
+        ;;
+        "10 oldest files in the user's home directory")
+        read -p "Please enter a username: " user
+        if id "$user" &>/dev/null; then
+                home_dir=$(eval echo "~$user")
+                if [ -d "$home_dir" ]; then
+                        echo "10 oldest files in $home_dir:"
+                        echo ""
+                        find "$home_dir" -type f -printf "%T+ %p\n" 2>/dev/null | sort | head -n 10
+                else
+                        echo "The home directory for user '$user' does not exist."
+                fi
+        else
+                echo "The user doesn't exist. "
+        fi
+        ;;
+	"Send a file as an email attachment")
+        read -p "Enter the recipient's email address: " email
+        read -p "Enter the full path of the file to attach: " file
+        if [ ! -f "$file" ]; then
+                echo "The file '$file' doesn't exist."
+        fi
+        read -p "Enter the subject of the email: " subject
+        read -p "Enter the message body: " body
+        if command -v mail &>/dev/null; then
+                echo "$body" | mail -s "$subject" -a "$file" "$email"
+                echo "Email sent successfully to $email with file attachment."
+        else
+                echo "The 'mail' command is not installed. Please install it and try again."
+        fi
+        ;;
+        "Main Menu")
+        echo ""
+        echo "Going Back to Main Menu..."
+        PS3=$'\nEnter your choice [1-7]: '
+        break
+        ;;
+        "Exit Program")
+        echo "Exiting Program..."
+        exit 0
+        ;;
+        *)
+        echo "Invalid option"
+        ;;
+        esac
+done
 }
 
 Main_Menu_Function
