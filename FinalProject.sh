@@ -348,11 +348,11 @@ File_Management() {
 echo ""
 echo -e "\e[1m\e[34m\e[4mFILE MANAGEMENT\e[0m"
 PS3=$'\nEnter an option [1-6]: '
-file_management_menu=("File in user's home directory" "10 largest files in the user's home directory" "10 oldest files in the user's home directory" "Send a file as an email attachment" "Main Menu" "Exit Program")
+file_management_menu=("Path to a file in user's home directory" "10 largest files in the user's home directory" "10 oldest files in the user's home directory" "Send a file as an email attachment" "Main Menu" "Exit Program")
 select option in "${file_management_menu[@]}"
 do
         case $option in
-        "File in user's home directory")
+        "Path to a file in user's home directory")
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
                 read -p "Please enter an existing file: " file
