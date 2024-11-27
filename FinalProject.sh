@@ -101,8 +101,19 @@ select option in "${backupMenu[@]}"
 do
 	case $option in
 		"Make a Backup Schedule")
-			echo "Please enter a day of the week in which you want to backup a file: "
-			read 
+			read -p "Please enter the file name in which you wish to backup: " filename
+                        if [ -e $filename ]; then
+                                read -p "Please enter what Day of The Week (1-7) you wish to backup your file (Enter * if you do not wish to input anything): " DayofWeek
+                                read -p "Please enter what Month (1-12) you wish to backup your file (Enter * if you do not wish to input anything): " Month
+                                read -p "Please enter what Day of The Month (1-31) you wish to backup your file (Enter * if you do not wish to input anything): " DayofMonth
+                                read -p "Please enter what Hour (0-23) you wish to backup your file (Enter * if you do not wish to input anything): " Hour
+                                read -p "Please enter what Minute (0-59) you wish to backup your file (Enter * if you do not wish to input anything): " Minute
+                                backupfile="$filename.bak"
+                                echo "$Minute $Hour $DayofMonth $Month $DayofWeek cp /~/$filename /~/$backupfile" > crontab.txt
+                                crontab crontab.txt
+                        else
+                                echo "Error: File does not exist" 
+                        fi
 		;;
 		"Show Last Backup Process")
 			echo "CPU Temperature"
@@ -112,6 +123,10 @@ do
 			echo ""
 			break
 		;;
+		"Exit Program")
+			echo "Exiting Program..."
+			exit 0
+                ;;
 		*)
 			echo "Error: Wrong input"
 		;;
