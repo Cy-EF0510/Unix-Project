@@ -1,51 +1,74 @@
 #! /bin/bash
 
 #colors
-RED="\033[31m"
-GREEN="\033[32m"
-ORANGE="\033[33m"
-BLUE="\033[34m"
-PINK="\033[35m"
-CYAN="\033[36m"
-WHITE="\033[37m"
-NC="\033[0;39m"
+RED=$(echo -e "\033[91m")
+GREEN=$(echo -e "\033[92m")
+ORANGE=$(echo -e "\033[33m")
+BLUE=$(echo -e "\033[94m")
+PINK=$(echo -e "\033[35m")
+YELLOW=$(echo -e "\033[93m")
+CYAN=$(echo -e "\033[36m")
+BRIGHT_MAGENTA=$(echo -e "\033[95m")
+WHITE=$(echo -e "\033[37m")
+NC=$(echo -e "\033[0;39m")
 
-echo "XYX Corp LTD."
+#effects
+Bold=$(echo -e "\033[1m")
+Underline=$(echo -e "\033[4m")
+
+#Background
+Red_BG=$(echo -e "\033[41m")
+
+
+echo "${Bold}${WHITE}${Red_BG}XYX Corp LTD.${NC}"
 echo ""
 Main_Menu_Function () {
-while true; do 
+
 echo ""
-echo -e "\e[1m\e[36m\e[4mM A I N - M E N U\e[0m"
-PS3=$'\nEnter an option [1-7]: ' 
-options=("System Status" "Backup" "Network" "Services" "User Management" "File Management" "Exit")
-select option in "${options[@]}"
-do
+
+        echo "${CYAN}========================================================${NC}"
+        echo "${BRIGHT_MAGENTA}                   == M A I N  M E N U ==                  ${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo "${YELLOW}1) System Status"
+        echo "2) Backup"
+        echo "3) Network"
+        echo "4) Services"
+        echo "5) User Management"
+        echo "6) User Management"
+        echo "7) Exit the program${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo " "
+
+
+while true; do
+read -p "${GREEN}Enter an option [1-7]: ${NC}" option
+
 	case $option in 
-		"System Status")
+		1)
 			System_Status
 			break
 		;;
-		"Backup")
+		2)
 			Backup
 			break
    		;;
-		"Network")
+		3)
 			Network
    			break
 		;;
-		"Services")
+		4)
 			Services
    			break
 		;;
-		"User Management")
+		5)
 			User_Management
    			break
 		;;
-		"File Management")
+		6)
 			File_Management
    			break
 		;;
-		"Exit")
+		7)
 			echo "Exiting Program..."
 			exit 0
 		;;
@@ -53,44 +76,53 @@ do
 			echo "Error: Wrong input"
 		;;
 	esac
- done
+   done
 done
 }
 
 #System Status
 System_Status() {
 echo ""
-echo -e "\e[1m\e[34m\e[4mSYSTEM - STATUS\e[0m"
-PS3=$'\nEnter an option [1-6]: '
-ssMenu=("Memory Status" "CPU Temperature" "Active Processes" "Stop and Close Process" "Main Menu" "Exit Program")
-select option in "${ssMenu[@]}"
-do
-	case $option in
-		"Memory Status")
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}              == System Status Menu ==                ${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}1) Memory Status"
+        echo "2) CPU Temperature"
+        echo "3) Active Processes"
+        echo "4) Stop and Close Process"
+        echo "5) Main Menu"
+        echo "6) Exit the program${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo " "
+
+while true; do
+read -p "${PINK}Enter an option [1-6]: ${NC}" option
+        case $option in
+
+		1)
 			echo "Checking Memory Status"
 			free
 		;;
-		"CPU Temperature")
+		2)
 			echo "CPU Temperature (Please note that '86_pkg_temp' is the CPU's temperature)"
 			(paste <(cat /sys/class/thermal/thermal_zone*/type) <(cat /sys/class/thermal/thermal_zone*/temp) | column -s $'\t' -t | sed 's/\(.\)..$/.\1°C/') | grep 'x86_pkg_temp'
 		;;
-		"Active Processes")
+		3)
 			echo "Active Processes"
-			echo "Press "q" to exit"
+			echo "Press 'q' to exit"
 			top
 		;;
-		"Stop and Close Process")
+		4)
 			read -p "Please enter the process you wish to stop and close: " process
 			killall $process
 			echo "$process has been terminated"
 		;;
-		"Main Menu")
+		5)
 			echo "Going Back to Main Menu..."
-                        echo ""
-                        PS3=$'\nEnter your choice [1-7]: '
-			break
+                        Main_Menu_Function
+                        break
 		;;
- 		"Exit Program")
+ 		6)
                         echo "Exiting Program..."
                         exit 0
                 ;;
@@ -104,13 +136,22 @@ done
 #Backup
 Backup() {
 echo ""
-echo -e "\e[1m\e[34m\e[4mBACKUP\e[0m"
-PS3=$'\nEnter an option [1-4]: '
-backupMenu=("Make a Backup Schedule" "Show Last Backup Process" "Main Menu" "Exit Program")
-select option in "${backupMenu[@]}"
-do
-	case $option in
-		"Make a Backup Schedule")
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}                   == BACKUP MENU  ==                  ${NC}"
+        echo "${CYAN}========================================================${NC}"
+echo "${GREEN}1) Make a Backup Schedule"
+        echo "2) Show Last Backup Process"
+        echo "3) Main Menu"
+        echo "4) Exit Program${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo " "
+
+while true; do
+read -p "${PINK}Enter an option [1-4]: ${NC}" option
+
+        case $option in
+
+		1)
 			read -p "Please enter the file name in which you wish to backup: " filename
                         if [ -e $filename ]; then
                                 read -p "Please enter what Day of The Week (1-7) you wish to backup your file (Enter * if you do not wish to input anything): " DayofWeek
@@ -125,15 +166,15 @@ do
                                 echo "Error: File does not exist" 
                         fi
 		;;
-		"Show Last Backup Process")
+		2)
 			echo "CPU Temperature"
 		;;
-		"Main Menu")
+		3)
 			echo "Going Back to Main Menu..."
-			echo ""
+			Main_Menu_Function
 			break
 		;;
-		"Exit Program")
+		4)
 			echo "Exiting Program..."
 			exit 0
                 ;;
@@ -147,25 +188,25 @@ done
 #Network
 Network() {
         echo " "
-        echo -e "${CYAN}========================================================${NC}"
-        echo -e "${ORANGE}                   == NETWORK MENU ==                  ${NC}"
-        echo -e "${CYAN}========================================================${NC}"
-        echo -e "${ORANGE}1. Show network cards, IP adresses, and default gateways${NC}"
-        echo -e "${ORANGE}2. Enable/Disable a network card${NC}"
-        echo -e "${ORANGE}3. Set an IP adress on a network card${NC}"
-        echo -e "${ORANGE}4. Connect to a nearby wifi network${NC}"
-        echo -e "${ORANGE}5. Exit to the main menu${NC}"
-        echo -e "${ORANGE}6. Exit the program${NC}"
-        echo -e "${CYAN}========================================================${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}                   == NETWORK MENU ==                  ${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}1) Show network cards, IP adresses, and default gateways"
+        echo "2) Enable/Disable a network card"
+        echo "3) Set an IP adress on a network card"
+        echo "4) Connect to a nearby wifi network"
+        echo "5) Exit to the main menu"
+        echo "6) Exit the program${NC}"
+        echo "${CYAN}========================================================${NC}"
         echo " "
 
         while true; do
         echo " "
-        read -p "Select an option from the Network menu [1-5]: " option
+        read -p "${PINK}Select an option [1-6]: ${NC}" option
 
         case $option in
                 1)
-                echo -e "${RED}Network cards${NC} and IP adresses: " 
+                echo "${RED}Network cards${NC} and IP adresses: " 
                 ip -brief address show
                 echo "Default gateways: "
                 ip route | grep default
@@ -219,6 +260,8 @@ Network() {
                 fi
                 ;;
                 5)
+		echo "Going Back to Main Menu..."
+		Main_Menu_Function
                 break
                 ;;
                 6)
@@ -236,18 +279,18 @@ Network
 #Services
 Services() {
         echo " "
-        echo -e "${CYAN}===============================${NC}"
-        echo -e "${GREEN}      == SERVICES MENU ==      ${NC}"
-        echo -e "${CYAN}===============================${NC}"
-        echo -e "${GREEN}1. Look at the current services${NC}"
-        echo -e "${GREEN}2. Start/Stop a service${NC}"
-        echo -e "${GREEN}3. Exit to the main menu${NC}"
-        echo -e "${GREEN}4. Exit the program${NC}"
-        echo -e "${CYAN}===============================${NC}"
+        echo "${CYAN}===============================${NC}"
+        echo "${GREEN}      == SERVICES MENU ==      ${NC}"
+        echo "${CYAN}===============================${NC}"
+        echo "${GREEN}1) Look at the current services"
+        echo "2) Start/Stop a service"
+        echo "3) Exit to the main menu"
+        echo "4) Exit the program${NC}"
+        echo "${CYAN}===============================${NC}"
         echo " "
 
         while true; do
-        read -p "Select an option [1-2]: " option
+        read -p "${PINK}Select an option [1-4]: ${NC}" option
 
         case $option in
                 1)
@@ -268,6 +311,8 @@ Services() {
                 fi
                 ;;
                 3)
+                echo "Going Back to Main Menu..."
+		Main_Menu_Function
                 break
                 ;;
                 4)
@@ -284,14 +329,29 @@ Services
 
 #User Management
 User_Management() {
-echo ""
-echo -e "\e[1m\e[34m\e[4mUser Management\e[0m"
-PS3=$'\nEnter an option [1-9]: '
-user_management_menu=("Add a user" "Give root permission to a user" "Delete a user" "Show active users" "Disconnect a user" "Show the list of all groups that a user is a member of them" "Change the user group" "Main Menu" "Exit Program")
-select option in "${user_management_menu[@]}"
-do
-        case $option in 
-        "Add a user")
+User_Management() {
+echo " "
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}              == USER MANAGEMENT MENU ==               ${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}1) Add a user"
+        echo "2) Give root permission to a user"
+        echo "3) Delete a user"
+        echo "4) Show active users"
+        echo "5) Disconnect a user"
+        echo "6) List of all groups of a user"
+        echo "7) Change the user group"
+        echo "8) Main Menu"
+        echo "9) Exit Program${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo " "
+
+        while true; do
+        read -p "${PINK}Select an option [1-9]: ${NC}" option
+
+        case $option in
+
+        1)
         read -p "Please enter the new username: " new_user
         if id $new_user &>/dev/null; then
                 echo "The user already exists. "
@@ -301,7 +361,7 @@ do
                 echo "A new user has been added with a password. "
         fi
         ;;
-        "Give root permission to a user")
+        2)
         read -p "Please enter a username: " new_sudo_user
         if id $new_sudo_user &>/dev/null; then
                 sudo usermod -aG root $new_sudo_user
@@ -310,7 +370,7 @@ do
                 echo "The user doesn't exist. "
         fi
         ;;
-        "Delete a user")
+        3)
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
             read -p "Are you sure you want to delete the user? (Y/N): " ans
@@ -326,10 +386,10 @@ do
                 echo "User doesn't exist. "
         fi
         ;;
-        "Show active users")
+        4)
         who
         ;;
-        "Disconnect a user")
+        5)
         read -p "Please enter the user you want to log out: " kill_user
         if who | grep -w $kill_user &>/dev/null; then
                 sudo pkill -KILL -u $kill_user
@@ -338,7 +398,7 @@ do
                 echo "User already disconnected. "
         fi
         ;;
-        "List of all groups of a user")
+        6)
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
                 groups $user
@@ -346,7 +406,7 @@ do
                 echo "The user doesn't exist. "
         fi
         ;;
-        "Change the user group")
+        7)
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
                 read -p "Please enter the new group: " newGroup
@@ -360,13 +420,12 @@ do
                 echo "The user doesn't exist. "
         fi
         ;;
-        "Main Menu")
-        echo ""
+        8)
         echo "Going Back to Main Menu..."
-        PS3=$'\nEnter your choice [1-7]: '
+	Main_Menu_Function
         break
         ;;
-        "Exit Program")
+        9)
         echo "Exiting Program..."
         exit 0
         ;;
