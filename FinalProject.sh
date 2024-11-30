@@ -203,7 +203,7 @@ Network() {
 
         case $option in
                 1)
-                echo "${RED}Network cards${NC} and IP adresses: " 
+                echo "Network cards and IP adresses: " 
                 ip -brief address show
                 echo "Default gateways: "
                 ip route | grep default
