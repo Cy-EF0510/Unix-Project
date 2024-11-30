@@ -19,26 +19,24 @@ Underline=$(echo -e "\033[4m")
 #Background
 Red_BG=$(echo -e "\033[41m")
 
+figlet "XYX Corp LTD ."
 
-echo "${Bold}${WHITE}${Red_BG}XYX Corp LTD.${NC}"
-echo ""
 Main_Menu_Function () {
 
 echo ""
 
         echo "${CYAN}========================================================${NC}"
-        echo "${BRIGHT_MAGENTA}                   == M A I N  M E N U ==                  ${NC}"
+        echo "${BRIGHT_MAGENTA}${Bold}                   == M A I N  M E N U ==                  ${NC}"
         echo "${CYAN}========================================================${NC}"
         echo "${YELLOW}1) System Status"
         echo "2) Backup"
         echo "3) Network"
         echo "4) Services"
         echo "5) User Management"
-        echo "6) User Management"
+        echo "6) File Management"
         echo "7) Exit the program${NC}"
         echo "${CYAN}========================================================${NC}"
         echo " "
-
 
 while true; do
 read -p "${GREEN}Enter an option [1-7]: ${NC}" option
@@ -69,14 +67,13 @@ read -p "${GREEN}Enter an option [1-7]: ${NC}" option
    			break
 		;;
 		7)
-			echo "Exiting Program..."
+			echo "${RED}Exiting Program...${NC}"
 			exit 0
 		;;
 		*)
-			echo "Error: Wrong input"
+			echo "${RED}Error: Wrong input${NC}"
 		;;
 	esac
-   done
 done
 }
 
@@ -123,11 +120,11 @@ read -p "${PINK}Enter an option [1-6]: ${NC}" option
                         break
 		;;
  		6)
-                        echo "Exiting Program..."
+                        echo "${RED}Exiting Program...${NC}"
                         exit 0
                 ;;
 		*)
-			echo "Error: Wrong input"
+			echo "${RED}Error: Wrong input${NC}"
 		;;
 	esac
 done
@@ -163,7 +160,7 @@ read -p "${PINK}Enter an option [1-4]: ${NC}" option
                                 echo "$Minute $Hour $DayofMonth $Month $DayofWeek cp /~/$filename /~/$backupfile" > crontab.txt
                                 crontab crontab.txt
                         else
-                                echo "Error: File does not exist" 
+                                echo "${RED}Error: File does not exist${NC}" 
                         fi
 		;;
 		2)
@@ -175,11 +172,11 @@ read -p "${PINK}Enter an option [1-4]: ${NC}" option
 			break
 		;;
 		4)
-			echo "Exiting Program..."
+			echo "${RED}Exiting Program...${NC}"
 			exit 0
                 ;;
 		*)
-			echo "Error: Wrong input"
+			echo "${RED}Error: Wrong input${NC}"
 		;;
 	esac
 done
@@ -224,10 +221,10 @@ Network() {
                                 sudo ip link set "$card" down
                                 echo ""$card" disabled."
                         else
-                                echo "Error: wrong input. Please answer with 'e' or 'd'."
+                                echo "${RED}Error: wrong input. Please answer with 'e' or 'd'.${NC}"
                         fi
                 else
-                        echo "Error. The network card "$card" does not exist."
+                        echo "${RED}Error. The network card "$card" does not exist.${NC}"
                 fi
                 ;;
 		3)
@@ -240,10 +237,10 @@ Network() {
                                 sudo ip addr add "$ip" dev "$card"
                                 echo "IP address "$ip" has been set on "$card"."
                         else
-                                echo "Error. IP adress "$ip" does not exist."
+                                echo "${RED}Error. IP adress "$ip" does not exist.${NC}"
                         fi
                 else
-                        echo "Error. The network card "$card" does not exist."
+                        echo "${RED}Error. The network card "$card" does not exist.${NC}"
                 fi
                 ;;
                 4)
@@ -265,16 +262,15 @@ Network() {
                 break
                 ;;
                 6)
-                echo "Exiting the program..."
+                echo "${RED}Exiting the program...${NC}"
                 exit 0
                 ;;
                 *)
-                echo "Invalid option. Please choose between option 1 to 5."
+                echo "${RED}Invalid option. Please choose between option 1 to 6.${NC}"
                 ;;
         esac
 done
 }
-Network
 
 #Services
 Services() {
@@ -307,7 +303,7 @@ Services() {
                         systemctl stop "$serv"
                         echo "Service "$serv" has been stopped."
                 else
-                        echo "Wrong input. Please answer with 'start' or 'stop'."
+                        echo "${RED}Wrong input. Please answer with 'start' or 'stop'.${NC}"
                 fi
                 ;;
                 3)
@@ -316,19 +312,17 @@ Services() {
                 break
                 ;;
                 4)
-                echo "Exiting the program..."
+                echo "${RED}Exiting the program...${NC}"
                 exit 0
                 ;;
                 *)
-                echo "Invalid option. PLease choose between option 1 and 2."
+                echo "${RED}Invalid option. PLease choose between option 1 and 4.${NC}"
                 ;;
         esac
 done
 }
-Services
 
 #User Management
-User_Management() {
 User_Management() {
 echo " "
         echo "${CYAN}========================================================${NC}"
@@ -354,7 +348,7 @@ echo " "
         1)
         read -p "Please enter the new username: " new_user
         if id $new_user &>/dev/null; then
-                echo "The user already exists. "
+                echo "${RED}The user already exists. ${NC}"
                 else
                 sudo useradd $new_user
                 sudo passwd $new_user
@@ -367,7 +361,7 @@ echo " "
                 sudo usermod -aG root $new_sudo_user
                 echo "The user now has root permission. "
         else
-                echo "The user doesn't exist. "
+                echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
         3)
@@ -380,10 +374,10 @@ echo " "
                 elif [[ $ans == [Nn] ]]; then
                         echo "The user will not be deleted. "
                 else
-                        echo "invalid input"
+                        echo "${RED}invalid input${NC}"
                 fi
         else
-                echo "User doesn't exist. "
+                echo "${RED}User doesn't exist. ${NC}"
         fi
         ;;
         4)
@@ -403,7 +397,7 @@ echo " "
         if id $user &>/dev/null; then
                 groups $user
         else
-                echo "The user doesn't exist. "
+                echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
         7)
@@ -414,10 +408,10 @@ echo " "
                         sudo usermod -aG $newGroup $user
                         echo "$user has been added to the group $newGroup. "
                 else
-                        echo "The group doesn't exist. "
+                        echo "${RED}The group doesn't exist. ${NC}"
                 fi
         else
-                echo "The user doesn't exist. "
+                echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
         8)
@@ -426,11 +420,11 @@ echo " "
         break
         ;;
         9)
-        echo "Exiting Program..."
+        echo "${RED}Exiting Program...${NC}"
         exit 0
         ;;
         *)
-        echo "Invalid option"
+        echo "${RED}Invalid option${NC}"
         ;;
         esac
 done
@@ -438,14 +432,24 @@ done
 
 #File Management
 File_Management() {
-echo ""
-echo -e "\e[1m\e[34m\e[4mFILE MANAGEMENT\e[0m"
-PS3=$'\nEnter an option [1-6]: '
-file_management_menu=("Path to a file in user's home directory" "10 largest files in the user's home directory" "10 oldest files in the user's home directory" "Send a file as an email attachment" "Main Menu" "Exit Program")
-select option in "${file_management_menu[@]}"
-do
+echo " "
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}              == FILE MANAGEMENT MENU ==                 ${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}1) Path to a file in user's home directory"
+        echo "2) 10 largest files in the user's home directory"
+        echo "3) 10 oldest files in the user's home directory"
+        echo "4) Send a file as an email attachment"
+        echo "5) Main Menu"
+        echo "6) Exit Program${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo " "
+
+        while true; do
+        read -p "${PINK}Select an option [1-6]: ${NC}" option
+
         case $option in
-        "Path to a file in user's home directory")
+        1)
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
                 read -p "Please enter an existing file: " file
@@ -454,13 +458,13 @@ do
                 if [ -f "$file_path" ]; then
                         echo "File found: $file_path"
                 else
-                        echo "The file doesn't exist in the home directory of $user. "
+                        echo "${RED}The file doesn't exist in the home directory of $user. ${NC}"
                 fi
         else
-                echo "The user doesn't exist. "
+                echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
-        "10 largest files in the user's home directory")
+        2)
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
                 home_dir=$(eval echo "~$user")
@@ -469,13 +473,13 @@ do
                 echo ""
                 find "$home_dir" -type f -exec du -h {} + 2>/dev/null | sort -rh | head -n 10
                 else
-                        echo "The home directory for user '$user' does not exist."
+                        echo "${RED}The home directory for user '$user' does not exist.${NC}"
                 fi
         else
-                echo "The user doesn't exist. "
+                echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
-        "10 oldest files in the user's home directory")
+        3)
         read -p "Please enter a username: " user
         if id "$user" &>/dev/null; then
                 home_dir=$(eval echo "~$user")
@@ -484,17 +488,17 @@ do
                         echo ""
                         find "$home_dir" -type f -printf "%T+ %p\n" 2>/dev/null | sort | head -n 10
                 else
-                        echo "The home directory for user '$user' does not exist."
+                        echo "${RED}The home directory for user '$user' does not exist.${NC}"
                 fi
         else
-                echo "The user doesn't exist. "
+                echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
-	"Send a file as an email attachment")
+	4)
         read -p "Enter the recipient's email address: " email
         read -p "Enter the full path of the file to attach: " file
         if [ ! -f "$file" ]; then
-                echo "The file '$file' doesn't exist."
+                echo "${RED}The file '$file' doesn't exist.${NC}"
         fi
         read -p "Enter the subject of the email: " subject
         read -p "Enter the message body: " body
@@ -505,18 +509,17 @@ do
                 echo "The 'mail' command is not installed. Please install it by running the command 'sudo apt-get install mailutils' and try again."
         fi
         ;;
-        "Main Menu")
-        echo ""
+        5)
         echo "Going Back to Main Menu..."
-        PS3=$'\nEnter your choice [1-7]: '
+        Main_Menu_Function
         break
         ;;
-        "Exit Program")
-        echo "Exiting Program..."
+        6)
+        echo "${RED}Exiting Program...${NC}"
         exit 0
         ;;
         *)
-        echo "Invalid option"
+        echo "${RED}Invalid option${NC}"
         ;;
         esac
 done
