@@ -1,91 +1,130 @@
 #! /bin/bash
 
-echo "XYX Corp LTD."
-echo ""
+#colors
+RED=$(echo -e "\033[91m")
+GREEN=$(echo -e "\033[92m")
+ORANGE=$(echo -e "\033[33m")
+BLUE=$(echo -e "\033[94m")
+PINK=$(echo -e "\033[35m")
+YELLOW=$(echo -e "\033[93m")
+CYAN=$(echo -e "\033[36m")
+BRIGHT_MAGENTA=$(echo -e "\033[95m")
+WHITE=$(echo -e "\033[37m")
+NC=$(echo -e "\033[0;39m")
+
+#effects
+Bold=$(echo -e "\033[1m")
+Underline=$(echo -e "\033[4m")
+
+#Background
+Red_BG=$(echo -e "\033[41m")
+
+figlet "XYX Corp LTD ."
+
 Main_Menu_Function () {
-while true; do 
+
 echo ""
-echo -e "\e[1m\e[36m\e[4mM A I N - M E N U\e[0m"
-PS3=$'\nEnter an option [1-7]: ' 
-options=("System Status" "Backup" "Network" "Services" "User Management" "File Management" "Exit")
-select option in "${options[@]}"
-do
+
+        echo "${CYAN}========================================================${NC}"
+        echo "${BRIGHT_MAGENTA}${Bold}                   == M A I N  M E N U ==                  ${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo "${YELLOW}1) System Status"
+        echo "2) Backup"
+        echo "3) Network"
+        echo "4) Services"
+        echo "5) User Management"
+        echo "6) File Management"
+        echo "7) Exit the program${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo " "
+
+while true; do
+read -p "${GREEN}Enter an option [1-7]: ${NC}" option
+
 	case $option in 
-		"System Status")
+		1)
 			System_Status
 			break
 		;;
-		"Backup")
+		2)
 			Backup
 			break
    		;;
-		"Network")
+		3)
 			Network
    			break
 		;;
-		"Services")
+		4)
 			Services
    			break
 		;;
-		"User Management")
+		5)
 			User_Management
    			break
 		;;
-		"File Management")
+		6)
 			File_Management
    			break
 		;;
-		"Exit")
-			echo "Exiting Program..."
+		7)
+			echo "${RED}Exiting Program...${NC}"
 			exit 0
 		;;
 		*)
-			echo "Error: Wrong input"
+			echo "${RED}Error: Wrong input${NC}"
 		;;
 	esac
- done
 done
 }
 
 #System Status
 System_Status() {
 echo ""
-echo -e "\e[1m\e[34m\e[4mSYSTEM - STATUS\e[0m"
-PS3=$'\nEnter an option [1-6]: '
-ssMenu=("Memory Status" "CPU Temperature" "Active Processes" "Stop and Close Process" "Main Menu" "Exit Program")
-select option in "${ssMenu[@]}"
-do
-	case $option in
-		"Memory Status")
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}              == System Status Menu ==                ${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}1) Memory Status"
+        echo "2) CPU Temperature"
+        echo "3) Active Processes"
+        echo "4) Stop and Close Process"
+        echo "5) Main Menu"
+        echo "6) Exit the program${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo " "
+
+while true; do
+read -p "${PINK}Enter an option [1-6]: ${NC}" option
+        case $option in
+
+		1)
 			echo "Checking Memory Status"
 			free
 		;;
-		"CPU Temperature")
+		2)
 			echo "CPU Temperature (Please note that '86_pkg_temp' is the CPU's temperature)"
 			(paste <(cat /sys/class/thermal/thermal_zone*/type) <(cat /sys/class/thermal/thermal_zone*/temp) | column -s $'\t' -t | sed 's/\(.\)..$/.\1°C/') | grep 'x86_pkg_temp'
 		;;
-		"Active Processes")
+		3)
 			echo "Active Processes"
-			echo "Press "q" to exit"
+			echo "Press 'q' to exit"
 			top
 		;;
-		"Stop and Close Process")
+		4)
 			read -p "Please enter the process you wish to stop and close: " process
 			killall $process
 			echo "$process has been terminated"
 		;;
-		"Main Menu")
+		5)
 			echo "Going Back to Main Menu..."
-                        echo ""
-                        PS3=$'\nEnter your choice [1-7]: '
-			break
+                        Main_Menu_Function
+                        break
 		;;
- 		"Exit Program")
-                        echo "Exiting Program..."
+ 		6)
+                        echo "${RED}Exiting Program...${NC}"
                         exit 0
                 ;;
 		*)
-			echo "Error: Wrong input"
+			echo "${RED}Error: Wrong input${NC}"
 		;;
 	esac
 done
@@ -94,13 +133,22 @@ done
 #Backup
 Backup() {
 echo ""
-echo -e "\e[1m\e[34m\e[4mBACKUP\e[0m"
-PS3=$'\nEnter an option [1-4]: '
-backupMenu=("Make a Backup Schedule" "Show Last Backup Process" "Main Menu" "Exit Program")
-select option in "${backupMenu[@]}"
-do
-	case $option in
-		"Make a Backup Schedule")
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}                   == BACKUP MENU  ==                  ${NC}"
+        echo "${CYAN}========================================================${NC}"
+echo "${GREEN}1) Make a Backup Schedule"
+        echo "2) Show Last Backup Process"
+        echo "3) Main Menu"
+        echo "4) Exit Program${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo " "
+
+while true; do
+read -p "${PINK}Enter an option [1-4]: ${NC}" option
+
+        case $option in
+
+		1)
 			read -p "Please enter the file name in which you wish to backup: " filename
                         if [ -e $filename ]; then
                                 read -p "Please enter what Day of The Week (1-7) you wish to backup your file (Enter * if you do not wish to input anything): " DayofWeek
@@ -112,23 +160,23 @@ do
                                 echo "$Minute $Hour $DayofMonth $Month $DayofWeek cp /~/$filename /~/$backupfile" > crontab.txt
                                 crontab crontab.txt
                         else
-                                echo "Error: File does not exist" 
+                                echo "${RED}Error: File does not exist${NC}" 
                         fi
 		;;
-		"Show Last Backup Process")
+		2)
 			echo "CPU Temperature"
 		;;
-		"Main Menu")
+		3)
 			echo "Going Back to Main Menu..."
-			echo ""
+			Main_Menu_Function
 			break
 		;;
-		"Exit Program")
-			echo "Exiting Program..."
+		4)
+			echo "${RED}Exiting Program...${NC}"
 			exit 0
                 ;;
 		*)
-			echo "Error: Wrong input"
+			echo "${RED}Error: Wrong input${NC}"
 		;;
 	esac
 done
@@ -137,21 +185,25 @@ done
 #Network
 Network() {
         echo " "
-        echo -e "\e[1m\e[34m\e[4mNETWORK\e[0m"
-        echo "1) Show network cards, IP adresses, and default gateways"
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}                   == NETWORK MENU ==                  ${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}1) Show network cards, IP adresses, and default gateways"
         echo "2) Enable/Disable a network card"
         echo "3) Set an IP adress on a network card"
         echo "4) Connect to a nearby wifi network"
         echo "5) Exit to the main menu"
-	echo "6) Exit the program"
-        echo ""
+        echo "6) Exit the program${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo " "
 
         while true; do
-        read -p "Enter an option [1-6]: " option
+        echo " "
+        read -p "${PINK}Select an option [1-6]: ${NC}" option
 
         case $option in
                 1)
-                echo -e "Network cards and IP adresses: " 
+                echo "Network cards and IP adresses: " 
                 ip -brief address show
                 echo "Default gateways: "
                 ip route | grep default
@@ -169,10 +221,10 @@ Network() {
                                 sudo ip link set "$card" down
                                 echo ""$card" disabled."
                         else
-                                echo "Error: wrong input. Please answer with 'e' or 'd'."
+                                echo "${RED}Error: wrong input. Please answer with 'e' or 'd'.${NC}"
                         fi
                 else
-                        echo "Error. The network card "$card" does not exist."
+                        echo "${RED}Error. The network card "$card" does not exist.${NC}"
                 fi
                 ;;
 		3)
@@ -185,12 +237,12 @@ Network() {
                                 sudo ip addr add "$ip" dev "$card"
                                 echo "IP address "$ip" has been set on "$card"."
                         else
-                                echo "Error. IP adress "$ip" does not exist."
+                                echo "${RED}Error. IP adress "$ip" does not exist.${NC}"
                         fi
                 else
-                        echo "Error. The network card "$card" does not exist."
+                        echo "${RED}Error. The network card "$card" does not exist.${NC}"
                 fi
-		;;
+                ;;
                 4)
                 echo "Here are the available wifi networks: "
                 nmcli dev wifi | awk '{print$2}' | tail -n +2
@@ -205,14 +257,16 @@ Network() {
                 fi
                 ;;
                 5)
+		echo "Going Back to Main Menu..."
+		Main_Menu_Function
                 break
                 ;;
-		6)
-        	echo "Exiting Program..."
-        	exit 0
-        	;;
+                6)
+                echo "${RED}Exiting the program...${NC}"
+                exit 0
+                ;;
                 *)
-                echo "Invalid option. Please choose between option 1 to 5."
+                echo "${RED}Invalid option. Please choose between option 1 to 6.${NC}"
                 ;;
         esac
 done
@@ -220,16 +274,19 @@ done
 
 #Services
 Services() {
-	echo " "
-        echo -e "\e[1m\e[34m\e[4mSERVICES\e[0m"
-        echo "1) List current services"
+        echo " "
+        echo "${CYAN}===============================${NC}"
+        echo "${GREEN}      == SERVICES MENU ==      ${NC}"
+        echo "${CYAN}===============================${NC}"
+        echo "${GREEN}1) Look at the current services"
         echo "2) Start/Stop a service"
-	echo "3) Exit to the main menu"
-	echo "4) Exit the program"
+        echo "3) Exit to the main menu"
+        echo "4) Exit the program${NC}"
+        echo "${CYAN}===============================${NC}"
         echo " "
 
         while true; do
-        read -p "Select an option [1-2]: " option
+        read -p "${PINK}Select an option [1-4]: ${NC}" option
 
         case $option in
                 1)
@@ -246,18 +303,20 @@ Services() {
                         systemctl stop "$serv"
                         echo "Service "$serv" has been stopped."
                 else
-                        echo "Wrong input. Please answer with 'start' or 'stop'."
+                        echo "${RED}Wrong input. Please answer with 'start' or 'stop'.${NC}"
                 fi
                 ;;
-		3) 
-  		break
-    		;;
-		4)
-        	echo "Exiting Program..."
-        	exit 0
-        	;;
+                3)
+                echo "Going Back to Main Menu..."
+		Main_Menu_Function
+                break
+                ;;
+                4)
+                echo "${RED}Exiting the program...${NC}"
+                exit 0
+                ;;
                 *)
-                echo "Invalid option. PLease choose between option 1 and 2."
+                echo "${RED}Invalid option. PLease choose between option 1 and 4.${NC}"
                 ;;
         esac
 done
@@ -265,33 +324,47 @@ done
 
 #User Management
 User_Management() {
-echo ""
-echo -e "\e[1m\e[34m\e[4mUser Management\e[0m"
-PS3=$'\nEnter an option [1-9]: '
-user_management_menu=("Add a user" "Give root permission to a user" "Delete a user" "Show active users" "Disconnect a user" "Show the list of all groups that a user is a member of them" "Change the user group" "Main Menu" "Exit Program")
-select option in "${user_management_menu[@]}"
-do
-        case $option in 
-        "Add a user")
+echo " "
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}              == USER MANAGEMENT MENU ==               ${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}1) Add a user"
+        echo "2) Give root permission to a user"
+        echo "3) Delete a user"
+        echo "4) Show active users"
+        echo "5) Disconnect a user"
+        echo "6) List of all groups of a user"
+        echo "7) Change the user group"
+        echo "8) Main Menu"
+        echo "9) Exit Program${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo " "
+
+        while true; do
+        read -p "${PINK}Select an option [1-9]: ${NC}" option
+
+        case $option in
+
+        1)
         read -p "Please enter the new username: " new_user
         if id $new_user &>/dev/null; then
-                echo "The user already exists. "
+                echo "${RED}The user already exists. ${NC}"
                 else
                 sudo useradd $new_user
                 sudo passwd $new_user
                 echo "A new user has been added with a password. "
         fi
         ;;
-        "Give root permission to a user")
+        2)
         read -p "Please enter a username: " new_sudo_user
         if id $new_sudo_user &>/dev/null; then
                 sudo usermod -aG root $new_sudo_user
                 echo "The user now has root permission. "
         else
-                echo "The user doesn't exist. "
+                echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
-        "Delete a user")
+        3)
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
             read -p "Are you sure you want to delete the user? (Y/N): " ans
@@ -301,16 +374,16 @@ do
                 elif [[ $ans == [Nn] ]]; then
                         echo "The user will not be deleted. "
                 else
-                        echo "invalid input"
+                        echo "${RED}invalid input${NC}"
                 fi
         else
-                echo "User doesn't exist. "
+                echo "${RED}User doesn't exist. ${NC}"
         fi
         ;;
-        "Show active users")
+        4)
         who
         ;;
-        "Disconnect a user")
+        5)
         read -p "Please enter the user you want to log out: " kill_user
         if who | grep -w $kill_user &>/dev/null; then
                 sudo pkill -KILL -u $kill_user
@@ -319,15 +392,15 @@ do
                 echo "User already disconnected. "
         fi
         ;;
-        "List of all groups of a user")
+        6)
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
                 groups $user
         else
-                echo "The user doesn't exist. "
+                echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
-        "Change the user group")
+        7)
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
                 read -p "Please enter the new group: " newGroup
@@ -335,24 +408,23 @@ do
                         sudo usermod -aG $newGroup $user
                         echo "$user has been added to the group $newGroup. "
                 else
-                        echo "The group doesn't exist. "
+                        echo "${RED}The group doesn't exist. ${NC}"
                 fi
         else
-                echo "The user doesn't exist. "
+                echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
-        "Main Menu")
-        echo ""
+        8)
         echo "Going Back to Main Menu..."
-        PS3=$'\nEnter your choice [1-7]: '
+	Main_Menu_Function
         break
         ;;
-        "Exit Program")
-        echo "Exiting Program..."
+        9)
+        echo "${RED}Exiting Program...${NC}"
         exit 0
         ;;
         *)
-        echo "Invalid option"
+        echo "${RED}Invalid option${NC}"
         ;;
         esac
 done
@@ -360,14 +432,24 @@ done
 
 #File Management
 File_Management() {
-echo ""
-echo -e "\e[1m\e[34m\e[4mFILE MANAGEMENT\e[0m"
-PS3=$'\nEnter an option [1-6]: '
-file_management_menu=("Path to a file in user's home directory" "10 largest files in the user's home directory" "10 oldest files in the user's home directory" "Send a file as an email attachment" "Main Menu" "Exit Program")
-select option in "${file_management_menu[@]}"
-do
+echo " "
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}              == FILE MANAGEMENT MENU ==                 ${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo "${GREEN}1) Path to a file in user's home directory"
+        echo "2) 10 largest files in the user's home directory"
+        echo "3) 10 oldest files in the user's home directory"
+        echo "4) Send a file as an email attachment"
+        echo "5) Main Menu"
+        echo "6) Exit Program${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo " "
+
+        while true; do
+        read -p "${PINK}Select an option [1-6]: ${NC}" option
+
         case $option in
-        "Path to a file in user's home directory")
+        1)
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
                 read -p "Please enter an existing file: " file
@@ -376,13 +458,13 @@ do
                 if [ -f "$file_path" ]; then
                         echo "File found: $file_path"
                 else
-                        echo "The file doesn't exist in the home directory of $user. "
+                        echo "${RED}The file doesn't exist in the home directory of $user. ${NC}"
                 fi
         else
-                echo "The user doesn't exist. "
+                echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
-        "10 largest files in the user's home directory")
+        2)
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
                 home_dir=$(eval echo "~$user")
@@ -391,13 +473,13 @@ do
                 echo ""
                 find "$home_dir" -type f -exec du -h {} + 2>/dev/null | sort -rh | head -n 10
                 else
-                        echo "The home directory for user '$user' does not exist."
+                        echo "${RED}The home directory for user '$user' does not exist.${NC}"
                 fi
         else
-                echo "The user doesn't exist. "
+                echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
-        "10 oldest files in the user's home directory")
+        3)
         read -p "Please enter a username: " user
         if id "$user" &>/dev/null; then
                 home_dir=$(eval echo "~$user")
@@ -406,17 +488,17 @@ do
                         echo ""
                         find "$home_dir" -type f -printf "%T+ %p\n" 2>/dev/null | sort | head -n 10
                 else
-                        echo "The home directory for user '$user' does not exist."
+                        echo "${RED}The home directory for user '$user' does not exist.${NC}"
                 fi
         else
-                echo "The user doesn't exist. "
+                echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
-	"Send a file as an email attachment")
+	4)
         read -p "Enter the recipient's email address: " email
         read -p "Enter the full path of the file to attach: " file
         if [ ! -f "$file" ]; then
-                echo "The file '$file' doesn't exist."
+                echo "${RED}The file '$file' doesn't exist.${NC}"
         fi
         read -p "Enter the subject of the email: " subject
         read -p "Enter the message body: " body
@@ -427,18 +509,17 @@ do
                 echo "The 'mail' command is not installed. Please install it by running the command 'sudo apt-get install mailutils' and try again."
         fi
         ;;
-        "Main Menu")
-        echo ""
+        5)
         echo "Going Back to Main Menu..."
-        PS3=$'\nEnter your choice [1-7]: '
+        Main_Menu_Function
         break
         ;;
-        "Exit Program")
-        echo "Exiting Program..."
+        6)
+        echo "${RED}Exiting Program...${NC}"
         exit 0
         ;;
         *)
-        echo "Invalid option"
+        echo "${RED}Invalid option${NC}"
         ;;
         esac
 done
