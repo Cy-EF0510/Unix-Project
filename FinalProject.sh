@@ -421,7 +421,7 @@ do
         read -p "Enter the subject of the email: " subject
         read -p "Enter the message body: " body
         if command -v mail &>/dev/null; then
-                echo "$body" | mail -s "$subject" -a "$file" "$email"
+                echo "$body" | mail -s "$subject" -A "$file" "$email"
                 echo "Email sent successfully to $email with file attachment."
         else
                 echo "The 'mail' command is not installed. Please install it by running the command 'sudo apt-get install mailutils' and try again."
