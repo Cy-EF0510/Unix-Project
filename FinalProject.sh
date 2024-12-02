@@ -1,6 +1,7 @@
 #! /bin/bash
 
 #colors
+BLACK=$(echo -e "\033[30m")
 RED=$(echo -e "\033[91m")
 GREEN=$(echo -e "\033[92m")
 ORANGE=$(echo -e "\033[33m")
@@ -17,7 +18,7 @@ Bold=$(echo -e "\033[1m")
 Underline=$(echo -e "\033[4m")
 
 #Background
-Red_BG=$(echo -e "\033[41m")
+WHITE_BG=$(echo -e "\033[47m")
 
 figlet "XYX Corp LTD ."
 
@@ -81,9 +82,9 @@ done
 System_Status() {
 echo ""
         echo "${CYAN}========================================================${NC}"
-        echo "${GREEN}              == System Status Menu ==                ${NC}"
+        echo "${BLACK}${WHITE_BG}              == System Status Menu ==                  ${NC}"
         echo "${CYAN}========================================================${NC}"
-        echo "${GREEN}1) Memory Status"
+        echo "${YELLOW}1) Memory Status"
         echo "2) CPU Temperature"
         echo "3) Active Processes"
         echo "4) Stop and Close Process"
@@ -96,37 +97,45 @@ while true; do
 read -p "${PINK}Enter an option [1-6]: ${NC}" option
         case $option in
 
-		1)
-			echo "Checking Memory Status"
-			free
-		;;
-		2)
-			echo "CPU Temperature (Please note that '86_pkg_temp' is the CPU's temperature)"
-			(paste <(cat /sys/class/thermal/thermal_zone*/type) <(cat /sys/class/thermal/thermal_zone*/temp) | column -s $'\t' -t | sed 's/\(.\)..$/.\1°C/') | grep 'x86_pkg_temp'
-		;;
-		3)
-			echo "Active Processes"
-			echo "Press 'q' to exit"
-			top
-		;;
-		4)
-			read -p "Please enter the process you wish to stop and close: " process
-			killall $process
-			echo "$process has been terminated"
-		;;
-		5)
-			echo "Going Back to Main Menu..."
+                1)
+                        echo "Checking Memory Status"
+                        free
+                ;;
+                2)
+                        echo "${GREEN}The temperature is: ${NC}"
+                        cpuTemp=$(paste <(cat /sys/class/thermal/thermal_zone*/type) <(cat /sys/class/thermal/thermal_zone*/temp) | column -s $'\t' -t | sed 's/\(.\)..$/.\1°C/' | awk '{print $2}')
+                        if [ ${cpuTemp%.*} -gt 80 ]; then
+                                echo "${RED}$cpuTemp${NC}"
+                        else
+                                echo "${GREEN}$cpuTemp${NC}"
+                        fi
+                ;;
+                3)
+                        echo "${GREEN}Active Processes: ${NC}"
+                        echo "Press 'q' to exit"
+                        top
+                ;;
+                4)
+                        echo ""
+                        echo "${GREEN}Active Processes: ${NC}"
+                        top -b -n 1 | awk 'NR>=8 && NR<=20 {print $12}' | head -n 10
+                        read -p "Please enter the name of the process you wish to stop and close: " process
+                        killall $process
+                        echo "${GREEN}$process has been terminated${NC}"
+                ;;
+                5)
+                        echo "Going Back to Main Menu..."
                         Main_Menu_Function
                         break
-		;;
- 		6)
+                ;;
+                6)
                         echo "${RED}Exiting Program...${NC}"
                         exit 0
                 ;;
-		*)
-			echo "${RED}Error: Wrong input${NC}"
-		;;
-	esac
+                *)
+                        echo "${RED}Error: Wrong input${NC}"
+                ;;
+        esac
 done
 }
 
@@ -134,9 +143,9 @@ done
 Backup() {
 echo ""
         echo "${CYAN}========================================================${NC}"
-        echo "${GREEN}                   == BACKUP MENU  ==                  ${NC}"
+        echo "${BLACK}${WHITE_BG}                   == BACKUP MENU  ==                   ${NC}"
         echo "${CYAN}========================================================${NC}"
-echo "${GREEN}1) Make a Backup Schedule"
+echo "${YELLOW}1) Make a Backup Schedule"
         echo "2) Show Last Backup Process"
         echo "3) Main Menu"
         echo "4) Exit Program${NC}"
@@ -198,9 +207,9 @@ done
 Network() {
         echo " "
         echo "${CYAN}========================================================${NC}"
-        echo "${GREEN}                   == NETWORK MENU ==                  ${NC}"
+        echo "${BLACK}${WHITE_BG}                   == NETWORK MENU ==                   ${NC}"
         echo "${CYAN}========================================================${NC}"
-        echo "${GREEN}1) Show network cards, IP adresses, and default gateways"
+        echo "${YELLOW}1) Show network cards, IP adresses, and default gateways"
         echo "2) Enable/Disable a network card"
         echo "3) Set an IP adress on a network card"
         echo "4) Connect to a nearby wifi network"
@@ -256,18 +265,28 @@ Network() {
                 fi
                 ;;
                 4)
-                echo "Here are the available wifi networks: "
-                nmcli dev wifi | awk '{print$2}' | tail -n +2
-                read -p "What wifi do you want to connect to: " wifi
-                read -s -p "Enter the wifi password: " password
-                if [ -n "$password" ]; then
-                        nmcli dev wifi connect "$wifi" password "$password"
-                        echo "Successfully connected to "$wifi"."
-                else 
-                        nmcli dev wifi connect "$wifi"
-                        echo "Successfully connected to "$wifi"."
+                if (! dpkg -l | grep -E '^ii' | grep network-manager &>/dev/null); then
+                        echo "Please install network-manager with command 'sudo apt-get install network-manager' to see the network options. "
+                else
+                        sudo systemctl start NetworkManager
+                        echo "${ORANGE}Please wait to see the available networks. ${NC}"
+                        nmcli dev wifi | awk '{print$2}' | tail -n +2
                 fi
-                ;;
+                read -p "${GREEN}What wifi do you want to connect to: ${NC}" wifi
+                if nmcli dev wifi list | awk '{print $2}' | grep -wq "$wifi"; then
+                        read -s -p "${GREEN}Enter the Wi-Fi password: ${NC}" password
+                        echo ""
+                        echo "${ORANGE}Please wait a couple seconds for the Wi-Fi to connect. ${NC}"
+                        echo ""
+                        if nmcli dev wifi connect "$wifi" password "$password" &>/dev/null; then
+                                echo "${GREEN}Successfully connected to $wifi.${NC}"
+                        else
+                                echo "${RED}Failed to connect. Please check your password and try again.${NC}"
+                        fi
+                else
+                        echo "${RED}The Wi-Fi network '$wifi' is not available. Please check the SSID and try again. ${NC}"
+                fi
+		;;
                 5)
 		echo "Going Back to Main Menu..."
 		Main_Menu_Function
@@ -287,14 +306,14 @@ done
 #Services
 Services() {
         echo " "
-        echo "${CYAN}===============================${NC}"
-        echo "${GREEN}      == SERVICES MENU ==      ${NC}"
-        echo "${CYAN}===============================${NC}"
-        echo "${GREEN}1) Look at the current services"
+        echo "${CYAN}========================================================${NC}"
+        echo "${BLACK}${WHITE_BG}                  == SERVICES MENU ==                   ${NC}"
+        echo "${CYAN}========================================================${NC}"
+        echo "${YELLOW}1) Look at the current services"
         echo "2) Start/Stop a service"
         echo "3) Exit to the main menu"
         echo "4) Exit the program${NC}"
-        echo "${CYAN}===============================${NC}"
+        echo "${CYAN}========================================================${NC}"
         echo " "
 
         while true; do
@@ -303,19 +322,29 @@ Services() {
         case $option in
                 1)
                 echo "Here is a list of the current services: "
+                echo "Press 'q' to exit"
+                echo ""
                 systemctl list-units --type service
                 ;;
                 2)
+		echo "Available services: "
+                echo "Press 'q' to exit"
+                echo ""
+                systemctl list-units --type service
                 read -p "Choose a service: " serv
-                read -p "Do you want to start it or stop it? " action
-                if [ "$action" == "start" ]; then
-                        systemctl start "$serv"
-                        echo "Service "$serv" has been started."
-                elif [ "$action" == "stop" ]; then
-                        systemctl stop "$serv"
-                        echo "Service "$serv" has been stopped."
+                if systemctl status $serv &>/dev/null; then
+                        read -p "Do you want to start it or stop it? " action
+                        if [ "$action" == "start" ]; then
+                                systemctl start "$serv"
+                                echo "${GREEN}Service "$serv" has been started.${NC}"
+                        elif [ "$action" == "stop" ]; then
+                                systemctl stop "$serv"
+                                echo "${GREEN}Service "$serv" has been stopped.${NC}"
+                        else
+                                echo "${RED}Wrong input. Please answer with 'start' or 'stop'.${NC}"
+                        fi
                 else
-                        echo "${RED}Wrong input. Please answer with 'start' or 'stop'.${NC}"
+                        echo "${RED}The service '$serv' doesn't exist. ${NC}"
                 fi
                 ;;
                 3)
@@ -338,9 +367,9 @@ done
 User_Management() {
 echo " "
         echo "${CYAN}========================================================${NC}"
-        echo "${GREEN}              == USER MANAGEMENT MENU ==               ${NC}"
+        echo "${BLACK}${WHITE_BG}              == USER MANAGEMENT MENU ==                ${NC}"
         echo "${CYAN}========================================================${NC}"
-        echo "${GREEN}1) Add a user"
+        echo "${YELLOW}1) Add a user"
         echo "2) Give root permission to a user"
         echo "3) Delete a user"
         echo "4) Show active users"
@@ -356,35 +385,38 @@ echo " "
         read -p "${PINK}Select an option [1-9]: ${NC}" option
 
         case $option in
-
         1)
         read -p "Please enter the new username: " new_user
         if id $new_user &>/dev/null; then
                 echo "${RED}The user already exists. ${NC}"
-                else
+        else
                 sudo useradd $new_user
                 sudo passwd $new_user
-                echo "A new user has been added with a password. "
+                echo "${GREEN}A new user has been added with a password. ${NC}"
         fi
         ;;
         2)
+	echo "${GREEN}Available users: ${NC}"
+        cut -d: -f1 /etc/passwd
         read -p "Please enter a username: " new_sudo_user
         if id $new_sudo_user &>/dev/null; then
                 sudo usermod -aG root $new_sudo_user
-                echo "The user now has root permission. "
+                echo "${GREEN}The user '$new_sudo_user' now has root permission. ${NC}"
         else
                 echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
         3)
+	echo "${GREEN}Available users: ${NC}"
+        cut -d: -f1 /etc/passwd	
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
             read -p "Are you sure you want to delete the user? (Y/N): " ans
                 if [[ $ans == [Yy] ]]; then
                         sudo userdel -r $user
-                        echo "User succesfully deleted"
+                        echo "${GREEN}User succesfully deleted${NC}"
                 elif [[ $ans == [Nn] ]]; then
-                        echo "The user will not be deleted. "
+                        echo "${GREEN}The user will not be deleted. ${NC}"
                 else
                         echo "${RED}invalid input${NC}"
                 fi
@@ -396,29 +428,40 @@ echo " "
         who
         ;;
         5)
+	echo "${GREEN}List of logged in users: ${NC}"
+        who | awk {'print $1'}
         read -p "Please enter the user you want to log out: " kill_user
-        if who | grep -w $kill_user &>/dev/null; then
-                sudo pkill -KILL -u $kill_user
-                echo "$kill_user disconnected."
-        else
-                echo "User already disconnected. "
+	if id $kill_user &>/dev/null; then
+        	if who | grep -w $kill_user &>/dev/null; then
+                	sudo pkill -KILL -u $kill_user
+                	echo "${GREEN}$kill_user disconnected.${NC}"
+        	else
+                	echo "${RED}User already disconnected. ${NC}"
+		 fi
+	else
+ 		echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
         6)
+	echo "${GREEN}Available users: ${NC}"
+        cut -d: -f1 /etc/passwd	
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
+		echo "${GREEN}Here are the groups that $user is a part of: ${NC}"
                 groups $user
         else
                 echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
         7)
+	echo "${GREEN}Available users: ${NC}"
+        cut -d: -f1 /etc/passwd	
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
                 read -p "Please enter the new group: " newGroup
                 if grep -q $newGroup /etc/group &>/dev/null; then
                         sudo usermod -aG $newGroup $user
-                        echo "$user has been added to the group $newGroup. "
+                        echo "${GREEN}$user has been added to the group $newGroup. ${NC}"
                 else
                         echo "${RED}The group doesn't exist. ${NC}"
                 fi
@@ -446,9 +489,9 @@ done
 File_Management() {
 echo " "
         echo "${CYAN}========================================================${NC}"
-        echo "${GREEN}              == FILE MANAGEMENT MENU ==                 ${NC}"
+        echo "${BLACK}${WHITE_BG}              == FILE MANAGEMENT MENU ==                ${NC}"
         echo "${CYAN}========================================================${NC}"
-        echo "${GREEN}1) Path to a file in user's home directory"
+        echo "${YELLOW}1) Path to a file in user's home directory"
         echo "2) 10 largest files in the user's home directory"
         echo "3) 10 oldest files in the user's home directory"
         echo "4) Send a file as an email attachment"
@@ -462,13 +505,15 @@ echo " "
 
         case $option in
         1)
+	echo "${GREEN}Available users: ${NC}"
+        cut -d: -f1 /etc/passwd	
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
                 read -p "Please enter an existing file: " file
                 home_dir=$(eval echo "~$user")
                 file_path="$home_dir/$file"
                 if [ -f "$file_path" ]; then
-                        echo "File found: $file_path"
+                        echo "${GREEN}File found: $file_path${NC}"
                 else
                         echo "${RED}The file doesn't exist in the home directory of $user. ${NC}"
                 fi
@@ -477,11 +522,13 @@ echo " "
         fi
         ;;
         2)
+	echo "${GREEN}Available users: ${NC}"
+        cut -d: -f1 /etc/passwd	
         read -p "Please enter a username: " user
         if id $user &>/dev/null; then
                 home_dir=$(eval echo "~$user")
                 if [ -d "$home_dir" ]; then
-                echo "10 largest files in $home_dir:"
+                echo "${GREEN}10 largest files in $home_dir:${NC}"
                 echo ""
                 find "$home_dir" -type f -exec du -h {} + 2>/dev/null | sort -rh | head -n 10
                 else
@@ -492,11 +539,13 @@ echo " "
         fi
         ;;
         3)
+	echo "${GREEN}Available users: ${NC}"
+        cut -d: -f1 /etc/passwd	
         read -p "Please enter a username: " user
         if id "$user" &>/dev/null; then
                 home_dir=$(eval echo "~$user")
                 if [ -d "$home_dir" ]; then
-                        echo "10 oldest files in $home_dir:"
+                        echo "${GREEN}10 largest files in $home_dir:${NC}"
                         echo ""
                         find "$home_dir" -type f -printf "%T+ %p\n" 2>/dev/null | sort | head -n 10
                 else
@@ -514,11 +563,13 @@ echo " "
         fi
         read -p "Enter the subject of the email: " subject
         read -p "Enter the message body: " body
+	echo "${ORANGE}Please wait for confirmation that the email has sent. (This could take up to 2 minutes)${NC}"
         if command -v mail &>/dev/null; then
                 echo "$body" | mail -s "$subject" -A "$file" "$email"
-                echo "Email sent successfully to $email with file attachment."
+                echo "${GREEN}Email sent successfully to $email with file attachment.${NC}"
         else
                 echo "The 'mail' command is not installed. Please install it by running the command 'sudo apt-get install mailutils' and try again."
+
         fi
         ;;
         5)
