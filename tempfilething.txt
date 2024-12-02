@@ -1,1 +1,1 @@
-28 21 * * * echo "HelloWorld"
+1 * * * * sudo touch ./police

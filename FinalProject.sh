@@ -150,21 +150,33 @@ read -p "${PINK}Enter an option [1-4]: ${NC}" option
 
 		1)
 			read -p "Please enter the file name in which you wish to backup: " filename
-                        if [ -e $filename ]; then
+                        if [ -e ./$filename ]; then
                                 read -p "Please enter what Day of The Week (1-7) you wish to backup your file (Enter * if you do not wish to input anything): " DayofWeek
                                 read -p "Please enter what Month (1-12) you wish to backup your file (Enter * if you do not wish to input anything): " Month
                                 read -p "Please enter what Day of The Month (1-31) you wish to backup your file (Enter * if you do not wish to input anything): " DayofMonth
                                 read -p "Please enter what Hour (0-23) you wish to backup your file (Enter * if you do not wish to input anything): " Hour
                                 read -p "Please enter what Minute (0-59) you wish to backup your file (Enter * if you do not wish to input anything): " Minute
                                 backupfile="$filename.bak"
-                                echo "$Minute $Hour $DayofMonth $Month $DayofWeek cp /~/$filename /~/$backupfile" > crontab.txt
-                                crontab crontab.txt
+                                if [ ! -e ./BackupDirectory ]; then
+                                        mkdir ./BackupDirectory
+                                fi
+                                #echo "$Minute $Hour $DayofMonth $Month $DayofWeek cp ./$filename ./BackupDirectory/$backupfile" > ./crontab.txt
+                                echo "$Minute $Hour $DayofMonth $Month $DayofWeek touch ./plusplus" > ./crontab.txt
+                                crontab ./crontab.txt
+                                echo "Succesfully made a backup for $filename"
                         else
                                 echo "${RED}Error: File does not exist${NC}" 
                         fi
 		;;
 		2)
-			echo "CPU Temperature"
+			if [ -e ./BackupDirectory ]; then
+                                echo "Showing Last Backup Process"
+                                ls -lt ./BackupDirectory | head -n 2
+                        else
+                                echo "You have not made any backup files yet."
+                        fi
+
+
 		;;
 		3)
 			echo "Going Back to Main Menu..."
