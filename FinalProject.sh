@@ -419,11 +419,15 @@ echo " "
 	echo "${GREEN}List of logged in users: ${NC}"
         who | awk {'print $1'}
         read -p "Please enter the user you want to log out: " kill_user
-        if who | grep -w $kill_user &>/dev/null; then
-                sudo pkill -KILL -u $kill_user
-                echo "${GREEN}$kill_user disconnected.${NC}"
-        else
-                echo "${RED}User already disconnected. ${NC}"
+	if id $kill_user &>/dev/null; then
+        	if who | grep -w $kill_user &>/dev/null; then
+                	sudo pkill -KILL -u $kill_user
+                	echo "${GREEN}$kill_user disconnected.${NC}"
+        	else
+                	echo "${RED}User already disconnected. ${NC}"
+		 fi
+	else
+ 		echo "${RED}The user doesn't exist. ${NC}"
         fi
         ;;
         6)
