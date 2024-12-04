@@ -275,6 +275,29 @@ Network() {
                         echo "${ORANGE}Please wait to see the available networks. ${NC}"
                         nmcli dev wifi | awk '{print$2}' | tail -n +2
                 fi
+		
+		while true; do
+                echo
+                echo "Here are the available wifi networks: "
+                nmcli dev wifi | awk '{print$2}' | tail -n +2
+                read -p "${GREEN}What wifi do you want to connect to: ${NC}" wifi
+                if ! nmcli dev wifi list | grep -q "$wifi"; then
+                        echo "Error: Wi-Fi network '$wifi' does not exist. Please make sure you enter a correct >
+                        continue
+                fi
+                read -s -p "${GREEN}Enter the Wi-Fi password: ${NC}" password
+		echo
+		echo "${ORANGE}Please wait a couple seconds for the Wi-Fi to connect. ${NC}"
+  		echo
+                connection=$(nmcli dev wifi connect "$wifi" password "$password" 2>&1)
+                if echo "$connection" | grep -q "successfully"; then
+                        echo "${GREEN}Successfully connected to $wifi.${NC}"
+                        break
+                else
+                        echo "${RED}Failed to connect. Please check your password and try again.${NC}"
+                fi
+                done
+
                 read -p "${GREEN}What wifi do you want to connect to: ${NC}" wifi
                 if nmcli dev wifi list | awk '{print $2}' | grep -wq "$wifi"; then
                         read -s -p "${GREEN}Enter the Wi-Fi password: ${NC}" password
@@ -290,6 +313,7 @@ Network() {
                         echo "${RED}The Wi-Fi network '$wifi' is not available. Please check the SSID and try again. ${NC}"
                 fi
 		;;
+  
                 5)
 		echo "Going Back to Main Menu..."
 		Main_Menu_Function
