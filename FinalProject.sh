@@ -285,7 +285,7 @@ Network() {
                 read -p "${GREEN}What wifi do you want to connect to: ${NC}" wifi
                 if ! nmcli dev wifi list | grep -q "$wifi"; then
                         echo "Error: Wi-Fi network '$wifi' does not exist. Please make sure you enter a correct >
-                        continue
+                        continue"
                 fi
                 read -s -p "${GREEN}Enter the Wi-Fi password: ${NC}" password
 		echo ""
@@ -454,7 +454,7 @@ echo " "
         fi
         ;;
         4)
-		echo "${GREEN}Active users${NC}:
+		echo "${GREEN}Active users${NC}"
         	who
         ;;
         5)
@@ -609,7 +609,7 @@ echo " "
         read -p "Enter the subject of the email: " subject
         read -p "Enter the message body: " body
         if command -v mail &>/dev/null; then
-                echo "${ORANGE}Please wait for confirmation that the email has sent. (This could take up to 2 minutes)${NC}
+                echo "${ORANGE}Please wait for confirmation that the email has sent. (This could take up to 2 minutes)${NC}"
                 echo "$body" | mail -s "$subject" -A "$file" "$email"
                 if [ $? -eq 0 ]; then
                         echo "${GREEN}Email sent successfully to $email with the file attachment.${NC}"
