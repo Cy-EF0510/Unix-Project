@@ -166,13 +166,16 @@ read -p "${PINK}Enter an option [1-4]: ${NC}" option
                                 read -p "Please enter what Hour (0-23) you wish to backup your file (Enter * if you do not wish to input anything): " Hour
                                 read -p "Please enter what Minute (0-59) you wish to backup your file (Enter * if you do not wish to input anything): " Minute
                                 backupfile="$filename.bak"
-                                if [ ! -e ./BackupDirectory ]; then
+                                if [ ! -d ./BackupDirectory ]; then
                                         mkdir ./BackupDirectory
                                 fi
                                 #echo "$Minute $Hour $DayofMonth $Month $DayofWeek cp ./$filename ./BackupDirectory/$backupfile" > ./crontab.txt
-                                echo "$Minute $Hour $DayofMonth $Month $DayofWeek touch ./plusplus" > ./crontab.txt
-                                crontab ./crontab.txt
-                                echo "Succesfully made a backup for $filename"
+                                #echo "$Minute $Hour $DayofMonth $Month $DayofWeek touch ./plusplus" > ./crontab.txt
+                                
+				cron_command="$Minute $Hour $DayofMonth $Month $DayofWeek cp ./$filename ./BackupDirectory/$backupfile"
+    				echo "$cron_command" > ./crontab.txt
+				crontab ./crontab.txt
+                                echo "${GREEN}Succesfully made a backup for $filename${NC}"
                         else
                                 echo "${RED}Error: File does not exist${NC}" 
                         fi
