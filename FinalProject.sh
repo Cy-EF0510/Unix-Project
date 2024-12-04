@@ -27,7 +27,7 @@ Main_Menu_Function () {
 echo ""
 
         echo "${CYAN}========================================================${NC}"
-        echo "${BRIGHT_MAGENTA}${Bold}                   == M A I N  M E N U ==                  ${NC}"
+        echo "${BRIGHT_MAGENTA}${Bold}               == M A I N  M E N U ==                  ${NC}"
         echo "${CYAN}========================================================${NC}"
         echo "${YELLOW}1) System Status"
         echo "2) Backup"
@@ -98,7 +98,7 @@ read -p "${PINK}Enter an option [1-6]: ${NC}" option
         case $option in
 
                 1)
-                        echo "Checking Memory Status"
+                        echo "${GREEN}Checking Memory Status:${NC}"
                         free
                 ;;
                 2)
@@ -120,8 +120,12 @@ read -p "${PINK}Enter an option [1-6]: ${NC}" option
                         echo "${GREEN}Active Processes: ${NC}"
                         top -b -n 1 | awk 'NR>=8 && NR<=20 {print $12}' | head -n 10
                         read -p "Please enter the name of the process you wish to stop and close: " process
-                        killall $process
-                        echo "${GREEN}$process has been terminated${NC}"
+                        if pgrep -x "$process" > /dev/null; then
+                                killall $process
+                                echo "${GREEN}$process has been terminated${NC}"
+                        else
+                                echo "${RED}Error: No process named '$process' is running.${NC}"
+                        fi
                 ;;
                 5)
                         echo "Going Back to Main Menu..."
@@ -181,14 +185,12 @@ read -p "${PINK}Enter an option [1-4]: ${NC}" option
                         fi
 		;;
 		2)
-			if [ -e ./BackupDirectory ]; then
-                                echo "Showing Last Backup Process"
-                                ls -lt ./BackupDirectory | head -n 2
+			if [ -d ./BackupDirectory ]; then
+                                echo "${GREEN}Showing Last Backup Process${NC}"
+                                ls -lt ./BackupDirectory |  awk 'NR==2 {print}'
                         else
-                                echo "You have not made any backup files yet."
+                                echo "${RED}You have not made any backup files yet.${NC}"
                         fi
-
-
 		;;
 		3)
 			echo "Going Back to Main Menu..."
@@ -277,7 +279,7 @@ Network() {
                 fi
 		
 		while true; do
-                echo
+                echo ""
                 echo "Here are the available wifi networks: "
                 nmcli dev wifi | awk '{print$2}' | tail -n +2
                 read -p "${GREEN}What wifi do you want to connect to: ${NC}" wifi
@@ -286,9 +288,9 @@ Network() {
                         continue
                 fi
                 read -s -p "${GREEN}Enter the Wi-Fi password: ${NC}" password
-		echo
+		echo ""
 		echo "${ORANGE}Please wait a couple seconds for the Wi-Fi to connect. ${NC}"
-  		echo
+  		echo ""
                 connection=$(nmcli dev wifi connect "$wifi" password "$password" 2>&1)
                 if echo "$connection" | grep -q "successfully"; then
                         echo "${GREEN}Successfully connected to $wifi.${NC}"
@@ -425,7 +427,7 @@ echo " "
         2)
 	echo "${GREEN}Available users: ${NC}"
         cut -d: -f1 /etc/passwd
-        read -p "Please enter a username: " new_sudo_user
+        read -p "Please enter the username you want to give root permission to: " new_sudo_user
         if id $new_sudo_user &>/dev/null; then
                 sudo usermod -aG root $new_sudo_user
                 echo "${GREEN}The user '$new_sudo_user' now has root permission. ${NC}"
@@ -436,7 +438,7 @@ echo " "
         3)
 	echo "${GREEN}Available users: ${NC}"
         cut -d: -f1 /etc/passwd	
-        read -p "Please enter a username: " user
+        read -p "Please enter the username you want to delete: " user
         if id $user &>/dev/null; then
             read -p "Are you sure you want to delete the user? (Y/N): " ans
                 if [[ $ans == [Yy] ]]; then
@@ -452,7 +454,8 @@ echo " "
         fi
         ;;
         4)
-        who
+		echo "${GREEN}Active users${NC}:
+        	who
         ;;
         5)
 	echo "${GREEN}List of logged in users: ${NC}"
@@ -472,7 +475,7 @@ echo " "
         6)
 	echo "${GREEN}Available users: ${NC}"
         cut -d: -f1 /etc/passwd	
-        read -p "Please enter a username: " user
+        read -p "Please enter a username to see their groups: " user
         if id $user &>/dev/null; then
 		echo "${GREEN}Here are the groups that $user is a part of: ${NC}"
                 groups $user
@@ -483,7 +486,7 @@ echo " "
         7)
 	echo "${GREEN}Available users: ${NC}"
         cut -d: -f1 /etc/passwd	
-        read -p "Please enter a username: " user
+        read -p "Please enter a username to add them to a new group: " user
         if id $user &>/dev/null; then
                 read -p "Please enter the new group: " newGroup
                 if grep -q $newGroup /etc/group &>/dev/null; then
@@ -534,7 +537,7 @@ echo " "
         1)
 	echo "${GREEN}Available users: ${NC}"
         cut -d: -f1 /etc/passwd	
-        read -p "Please enter a username: " user
+        read -p "Please enter a username to find a path to a chosen file: " user
         if id $user &>/dev/null; then
                 read -p "Please enter an existing file: " file
                 home_dir=$(eval echo "~$user")
@@ -551,7 +554,7 @@ echo " "
         2)
 	echo "${GREEN}Available users: ${NC}"
         cut -d: -f1 /etc/passwd	
-        read -p "Please enter a username: " user
+        read -p "Please enter a username to see their 10 largest files: " user
         if id $user &>/dev/null; then
                 home_dir=$(eval echo "~$user")
                 if [ -d "$home_dir" ]; then
@@ -568,11 +571,11 @@ echo " "
         3)
 	echo "${GREEN}Available users: ${NC}"
         cut -d: -f1 /etc/passwd	
-        read -p "Please enter a username: " user
+        read -p "Please enter a username to see their 10 oldest files: " user
         if id "$user" &>/dev/null; then
                 home_dir=$(eval echo "~$user")
                 if [ -d "$home_dir" ]; then
-                        echo "${GREEN}10 largest files in $home_dir:${NC}"
+                        echo "${GREEN}10 oldest files in $home_dir:${NC}"
                         echo ""
                         find "$home_dir" -type f -printf "%T+ %p\n" 2>/dev/null | sort | head -n 10
                 else
@@ -583,20 +586,40 @@ echo " "
         fi
         ;;
 	4)
-        read -p "Enter the recipient's email address: " email
-        read -p "Enter the full path of the file to attach: " file
-        if [ ! -f "$file" ]; then
-                echo "${RED}The file '$file' doesn't exist.${NC}"
-        fi
+        validate_email() {
+        local email_regex="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        [[ $1 =~ $email_regex ]]
+        }
+        while true; do
+                read -p "Enter the recipient's email address: " email
+                if validate_email "$email"; then
+                        break
+                else
+                        echo -e "${RED}Invalid email address format. Please try again.${NC}"
+                fi
+        done
+        while true; do
+                read -p "Enter the full path of the file to attach: " file
+                if [ -f "$file" ]; then
+                        break
+                else
+                        echo -e "${RED}Error: The file '$file' doesn't exist. Please try again.${NC}"
+                fi
+        done
         read -p "Enter the subject of the email: " subject
         read -p "Enter the message body: " body
-	echo "${ORANGE}Please wait for confirmation that the email has sent. (This could take up to 2 minutes)${NC}"
         if command -v mail &>/dev/null; then
+                echo "${ORANGE}Please wait for confirmation that the email has sent. (This could take up to 2 minutes)${NC}
                 echo "$body" | mail -s "$subject" -A "$file" "$email"
-                echo "${GREEN}Email sent successfully to $email with file attachment.${NC}"
+                if [ $? -eq 0 ]; then
+                        echo "${GREEN}Email sent successfully to $email with the file attachment.${NC}"
+                else
+                        echo "${RED}Failed to send the email. Please check your configuration.${NC}"
+                fi
         else
-                echo "The 'mail' command is not installed. Please install it by running the command 'sudo apt-get install mailutils' and try again."
-
+                echo -e "${RED}Error: The 'mail' command is not installed.${NC}"
+                echo "Please install it by running the following command:"
+                echo "sudo apt-get install mailutils"
         fi
         ;;
         5)
