@@ -15,7 +15,6 @@ NC=$(echo -e "\033[0;39m")
 
 #effects
 Bold=$(echo -e "\033[1m")
-Underline=$(echo -e "\033[4m")
 
 #Background
 WHITE_BG=$(echo -e "\033[47m")
@@ -42,7 +41,7 @@ echo ""
 while true; do
 read -p "${GREEN}Enter an option [1-7]: ${NC}" option
 
-	case $option in 
+	case $option in
 		1)
 			System_Status
 			break
@@ -80,6 +79,7 @@ done
 
 #System Status
 System_Status() {
+while true; do
 echo ""
         echo "${CYAN}========================================================${NC}"
         echo "${BLACK}${WHITE_BG}              == System Status Menu ==                  ${NC}"
@@ -93,12 +93,11 @@ echo ""
         echo "${CYAN}========================================================${NC}"
         echo " "
 
-while true; do
 read -p "${PINK}Enter an option [1-6]: ${NC}" option
         case $option in
 
                 1)
-                        echo "${GREEN}Checking Memory Status:${NC}"
+                        echo "${GREEN}Checking Memory Status${NC}"
                         free
                 ;;
                 2)
@@ -112,8 +111,7 @@ read -p "${PINK}Enter an option [1-6]: ${NC}" option
                 ;;
                 3)
                         echo "${GREEN}Active Processes: ${NC}"
-                        echo "Press 'q' to exit"
-                        top
+                        top |head -n 20
                 ;;
                 4)
                         echo ""
@@ -145,6 +143,7 @@ done
 
 #Backup
 Backup() {
+while true; do
 echo ""
         echo "${CYAN}========================================================${NC}"
         echo "${BLACK}${WHITE_BG}                   == BACKUP MENU  ==                   ${NC}"
@@ -156,7 +155,6 @@ echo "${YELLOW}1) Make a Backup Schedule"
         echo "${CYAN}========================================================${NC}"
         echo " "
 
-while true; do
 read -p "${PINK}Enter an option [1-4]: ${NC}" option
 
         case $option in
@@ -175,7 +173,7 @@ read -p "${PINK}Enter an option [1-4]: ${NC}" option
                                 fi
                                 #echo "$Minute $Hour $DayofMonth $Month $DayofWeek cp ./$filename ./BackupDirectory/$backupfile" > ./crontab.txt
                                 #echo "$Minute $Hour $DayofMonth $Month $DayofWeek touch ./plusplus" > ./crontab.txt
-                                
+
 				cron_command="$Minute $Hour $DayofMonth $Month $DayofWeek cp ./$filename ./BackupDirectory/$backupfile"
     				echo "$cron_command" > ./crontab.txt
 				crontab ./crontab.txt
@@ -187,10 +185,13 @@ read -p "${PINK}Enter an option [1-4]: ${NC}" option
 		2)
 			if [ -d ./BackupDirectory ]; then
                                 echo "${GREEN}Showing Last Backup Process${NC}"
-                                ls -lt ./BackupDirectory |  awk 'NR==2 {print}'
+                                ls -lt ./BackupDirectory | awk 'NR==2 {print}'
+				echo ""
                         else
                                 echo "${RED}You have not made any backup files yet.${NC}"
                         fi
+
+
 		;;
 		3)
 			echo "Going Back to Main Menu..."
@@ -210,6 +211,7 @@ done
 
 #Network
 Network() {
+while true; do
         echo " "
         echo "${CYAN}========================================================${NC}"
         echo "${BLACK}${WHITE_BG}                   == NETWORK MENU ==                   ${NC}"
@@ -223,21 +225,20 @@ Network() {
         echo "${CYAN}========================================================${NC}"
         echo " "
 
-        while true; do
         echo " "
         read -p "${PINK}Select an option [1-6]: ${NC}" option
 
         case $option in
                 1)
-                echo "Network cards and IP adresses: " 
+                echo "${GREEN}Network cards and IP adresses: ${NC}"
                 ip -brief address show
-                echo "Default gateways: "
+                echo "${GREEN}Default gateways: ${NC}"
                 ip route | grep default
                 ;;
                 2)
-                echo "Here are the available network cards: "
+                echo "${GREEN}Here are the available network cards: ${NC}"
                 ip -brief address show
-                read -p "Choose a network card: " card
+                read -p "${GREEN}Choose a network card: ${NC}" card
                 if ip link show "$card" &>/dev/null; then
                         read -p "Do you want to enable or disable it?[e/d]: " ed
                         if [ "$ed" == "e" ]; then
@@ -254,14 +255,14 @@ Network() {
                 fi
                 ;;
 		3)
-                echo "Here are the available network cards: " 
+                echo "${GREEN}Here are the available network cards: ${NC}" 
                 ip -brief address show
                 read -p "Select a network card to set the IP adress on: " card
                 if ip link show "$card" &>/dev/null; then
                         read -p "Enter an IP address: " ip
                         if ping -c 1 -W 1 "$ip" &>/dev/null; then
                                 sudo ip addr add "$ip" dev "$card"
-                                echo "IP address "$ip" has been set on "$card"."
+                                echo "${GREEN}IP address "$ip" has been set on "$card".${NC}"
                         else
                                 echo "${RED}Error. IP adress "$ip" does not exist.${NC}"
                         fi
@@ -270,22 +271,18 @@ Network() {
                 fi
                 ;;
                 4)
-                if (! dpkg -l | grep -E '^ii' | grep network-manager &>/dev/null); then
-                        echo "Please install network-manager with command 'sudo apt-get install network-manager' to see the network options. "
+		if (! dpkg -l | grep -E '^ii' | grep network-manager &>/dev/null); then
+                        echo "${RED}Please install network-manager with command 'sudo apt-get install network-manager' to see the network options. ${NC}"
                 else
                         sudo systemctl start NetworkManager
-                        echo "${ORANGE}Please wait to see the available networks. ${NC}"
-                        nmcli dev wifi | awk '{print$2}' | tail -n +2
-                fi
-		
 		while true; do
                 echo ""
-                echo "Here are the available wifi networks: "
-                nmcli dev wifi | awk '{print$2}' | tail -n +2
-                read -p "${GREEN}What wifi do you want to connect to: ${NC}" wifi
+                echo "${GREEN}Here are the available wifi networks: ${NC}"
+                nmcli dev wifi | awk '{print$2}' | tail -n +2 | sort | uniq
+                 read -p "${GREEN}What wifi do you want to connect to: ${NC}" wifi
                 if ! nmcli dev wifi list | grep -q "$wifi"; then
-                        echo "Error: Wi-Fi network '$wifi' does not exist. Please make sure you enter a correct >
-                        continue"
+                        echo "${RED}Error: Wi-Fi network '$wifi' does not exist. Please make sure you enter a correct Wi-Fi. ${NC}" 
+                        continue
                 fi
                 read -s -p "${GREEN}Enter the Wi-Fi password: ${NC}" password
 		echo ""
@@ -299,23 +296,8 @@ Network() {
                         echo "${RED}Failed to connect. Please check your password and try again.${NC}"
                 fi
                 done
-
-                read -p "${GREEN}What wifi do you want to connect to: ${NC}" wifi
-                if nmcli dev wifi list | awk '{print $2}' | grep -wq "$wifi"; then
-                        read -s -p "${GREEN}Enter the Wi-Fi password: ${NC}" password
-                        echo ""
-                        echo "${ORANGE}Please wait a couple seconds for the Wi-Fi to connect. ${NC}"
-                        echo ""
-                        if nmcli dev wifi connect "$wifi" password "$password" &>/dev/null; then
-                                echo "${GREEN}Successfully connected to $wifi.${NC}"
-                        else
-                                echo "${RED}Failed to connect. Please check your password and try again.${NC}"
-                        fi
-                else
-                        echo "${RED}The Wi-Fi network '$wifi' is not available. Please check the SSID and try again. ${NC}"
-                fi
+		fi
 		;;
-  
                 5)
 		echo "Going Back to Main Menu..."
 		Main_Menu_Function
@@ -334,6 +316,7 @@ done
 
 #Services
 Services() {
+while true; do
         echo " "
         echo "${CYAN}========================================================${NC}"
         echo "${BLACK}${WHITE_BG}                  == SERVICES MENU ==                   ${NC}"
@@ -345,19 +328,18 @@ Services() {
         echo "${CYAN}========================================================${NC}"
         echo " "
 
-        while true; do
         read -p "${PINK}Select an option [1-4]: ${NC}" option
 
         case $option in
                 1)
-                echo "Here is a list of the current services: "
-                echo "Press 'q' to exit"
+                echo "${GREEN}Here is a list of the current services: ${NC}"
+                echo "${ORANGE}Press 'q' to exit${NC}"
                 echo ""
                 systemctl list-units --type service
                 ;;
                 2)
 		echo "Available services: "
-                echo "Press 'q' to exit"
+                echo "${ORANGE}Press 'q' to exit${NC}"
                 echo ""
                 systemctl list-units --type service
                 read -p "Choose a service: " serv
@@ -394,6 +376,7 @@ done
 
 #User Management
 User_Management() {
+while true; do
 echo " "
         echo "${CYAN}========================================================${NC}"
         echo "${BLACK}${WHITE_BG}              == USER MANAGEMENT MENU ==                ${NC}"
@@ -410,7 +393,6 @@ echo " "
         echo "${CYAN}========================================================${NC}"
         echo " "
 
-        while true; do
         read -p "${PINK}Select an option [1-9]: ${NC}" option
 
         case $option in
@@ -454,8 +436,7 @@ echo " "
         fi
         ;;
         4)
-		echo "${GREEN}Active users${NC}"
-        	who
+        who
         ;;
         5)
 	echo "${GREEN}List of logged in users: ${NC}"
@@ -517,6 +498,7 @@ done
 
 #File Management
 File_Management() {
+while true; do
 echo " "
         echo "${CYAN}========================================================${NC}"
         echo "${BLACK}${WHITE_BG}              == FILE MANAGEMENT MENU ==                ${NC}"
@@ -530,7 +512,6 @@ echo " "
         echo "${CYAN}========================================================${NC}"
         echo " "
 
-        while true; do
         read -p "${PINK}Select an option [1-6]: ${NC}" option
 
         case $option in
@@ -586,7 +567,7 @@ echo " "
         fi
         ;;
 	4)
-        validate_email() {
+	validate_email() {
         local email_regex="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         [[ $1 =~ $email_regex ]]
         }
@@ -620,7 +601,7 @@ echo " "
                 echo -e "${RED}Error: The 'mail' command is not installed.${NC}"
                 echo "Please install it by running the following command:"
                 echo "sudo apt-get install mailutils"
-        fi
+	fi
         ;;
         5)
         echo "Going Back to Main Menu..."
