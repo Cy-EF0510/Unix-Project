@@ -403,7 +403,10 @@ echo " "
         else
                 sudo useradd $new_user
                 sudo passwd $new_user
+                while ! passwd $new_user; do
+                sudo passwd $new_user
                 echo "${GREEN}A new user has been added with a password. ${NC}"
+                done
         fi
         ;;
         2)
