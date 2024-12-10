@@ -403,10 +403,11 @@ echo " "
         else
                 sudo useradd $new_user
                 sudo passwd $new_user
-                while ! passwd $new_user; do
+                while passwd $new_user $? -eq 0; do
+                echo "${RED}Password is not successful. Please try again. ${NC}"
                 sudo passwd $new_user
-                echo "${GREEN}A new user has been added with a password. ${NC}"
                 done
+                echo "${GREEN}A new user has been added with a password. ${NC}"
         fi
         ;;
         2)
